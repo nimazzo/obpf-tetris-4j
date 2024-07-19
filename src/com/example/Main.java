@@ -1,16 +1,16 @@
-package com.example.main;
+package com.example;
 
-import com.example.ObpfEvent;
-import com.example.ObpfNativeInterface;
-import com.example.ObpfTetromino;
-import com.example.ObpfVec2;
+import com.example.generated.ObpfEvent;
+import com.example.generated.ObpfNativeInterface;
+import com.example.generated.ObpfTetromino;
+import com.example.generated.ObpfVec2;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import static com.example.ObpfNativeInterface.*;
+import static com.example.generated.ObpfNativeInterface.*;
 
 public class Main {
     static long frame = 0;
