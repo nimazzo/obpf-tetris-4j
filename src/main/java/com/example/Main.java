@@ -15,7 +15,7 @@ import java.util.Scanner;
 import java.util.stream.IntStream;
 
 public class Main {
-    static final Path DLLPATH = Path.of("Z:\\Programming\\CLionProjects\\simulator\\cmake-build-debug\\bin\\obpf\\obpf_d.dll");
+    static final Path DLLPATH = Path.of("C:\\Users\\mazzo\\Documents\\Programming\\CLionProjects\\simulator\\cmake-build-debug\\bin\\obpf\\obpf_d.dll");
 
     static {
         try {

@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 
 public class JextractRunner {
-    private static final Path CPROJECT_PATH = Path.of("Z:\\Programming\\CLionProjects\\simulator");
+    private static final Path CPROJECT_PATH = Path.of("C:\\Users\\mazzo\\Documents\\Programming\\CLionProjects\\simulator");
 
     static {
         // check if folder exists
