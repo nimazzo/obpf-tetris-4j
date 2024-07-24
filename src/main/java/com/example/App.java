@@ -20,6 +20,7 @@ public class App extends Application {
         hbox.getChildren().addAll(tetrion, new Tetrion());
         Scene scene = new Scene(hbox);
         stage.setScene(scene);
+        stage.setTitle("Obpf TetrisJ");
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {

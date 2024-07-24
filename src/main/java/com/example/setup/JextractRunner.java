@@ -4,15 +4,18 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 
 public class JextractRunner {
-    private static final Path CPROJECT_PATH = Path.of("C:\\Users\\mazzo\\Documents\\Programming\\CLionProjects\\simulator");
+    static final String CPROJECT_PATH = System.getProperty("CPROJECT_PATH");
 
     static {
         // check if folder exists
-        if (!CPROJECT_PATH.toFile().exists()) {
+        Objects.requireNonNull(CPROJECT_PATH, "CPROJECT_PATH must be set");
+
+        if (!Path.of(CPROJECT_PATH).toFile().exists()) {
             System.err.println("C project path does not exist: " + CPROJECT_PATH);
             System.exit(1);
         }
@@ -29,7 +32,7 @@ public class JextractRunner {
     }
 
     public JextractRunner includeDir(String includeDir) {
-        includeDirs.add(CPROJECT_PATH.resolve(includeDir).normalize().toString());
+        includeDirs.add(Path.of(CPROJECT_PATH).resolve(includeDir).normalize().toString());
         return this;
     }
 
@@ -54,7 +57,7 @@ public class JextractRunner {
     }
 
     public JextractRunner mainHeaderFile(String mainHeaderFile) {
-        this.mainHeaderFile = CPROJECT_PATH.resolve(mainHeaderFile).normalize().toString();
+        this.mainHeaderFile = Path.of(CPROJECT_PATH).resolve(mainHeaderFile).normalize().toString();
         return this;
     }
 

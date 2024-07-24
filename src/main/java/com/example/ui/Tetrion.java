@@ -24,15 +24,6 @@ public class Tetrion extends StackPane {
     private static final int PIXELS_PER_CELL = 30;
     private static final int PADDING = 10;
     private static final Color CLEAR_COLOR = Color.rgb(175, 175, 175);
-
-    private final Canvas canvas;
-
-    private final MemorySegment obpfTetrion;
-    private final MemorySegment obpfMatrix;
-    private final AtomicIntegerArray keysPressed = new AtomicIntegerArray(7);
-
-    private final Text fpsCounter;
-
     private static final List<Color> COLORS = List.of(
             Color.rgb(0, 0, 0),
             Color.rgb(0, 240, 240),
@@ -43,7 +34,6 @@ public class Tetrion extends StackPane {
             Color.rgb(160, 0, 240),
             Color.rgb(240, 0, 0)
     );
-
     private static final List<Color> GHOST_COLORS = List.of(
             Color.rgb(0, 0, 0),
             Color.rgb(0, 120, 120),
@@ -54,6 +44,11 @@ public class Tetrion extends StackPane {
             Color.rgb(90, 0, 120),
             Color.rgb(120, 0, 0)
     );
+    private final Canvas canvas;
+    private final MemorySegment obpfTetrion;
+    private final MemorySegment obpfMatrix;
+    private final AtomicIntegerArray keysPressed = new AtomicIntegerArray(7);
+    private final Text fpsCounter;
     private long last = System.nanoTime();
     private long lastSimulated = System.nanoTime();
 
@@ -77,11 +72,25 @@ public class Tetrion extends StackPane {
         }.start();
     }
 
-    public void redraw(long now) {
-        var elapsed = now - last;
-        fpsCounter.setText(String.format("%.2f", 1_000_000_000.0 / elapsed));
+    long totalFrameTime = 0;
+    int frameTimeIndex = 0;
 
-        if (now - lastSimulated > 16_666_666) {
+    public void redraw(long now) {
+        totalFrameTime += now - last;
+        frameTimeIndex++;
+        last = now;
+
+        if (totalFrameTime >= 1_000_000_000) {
+            long averageFrameTime = totalFrameTime / frameTimeIndex;
+            long fps = 1_000_000_000 / averageFrameTime;
+            fpsCounter.setText(String.format("%d", fps));
+
+            totalFrameTime = 0;
+            frameTimeIndex = 0;
+        }
+
+        // if 16 ms elapsed, simulate next frame
+        if (now - lastSimulated > 16_000_000) {
             MemorySegment key_state = createKeyState();
             ObpfNativeInterface.obpf_tetrion_simulate_next_frame(obpfTetrion, key_state);
             lastSimulated = now;
@@ -93,7 +102,6 @@ public class Tetrion extends StackPane {
         drawGhostPiece();
         drawActivePiece();
         drawGrid();
-        last = now;
     }
 
     private void drawMatrix() {
