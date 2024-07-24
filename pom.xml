@@ -32,6 +32,9 @@
                     <jlinkImageName>obpf-tetris</jlinkImageName>
                     <launcher>run</launcher>
                     <mainClass>com.example.obpf_tetris/com.example.App</mainClass>
+                    <options>
+                        <option>--enable-native-access=com.example.obpf_tetris</option>
+                    </options>
                 </configuration>
             </plugin>
         </plugins>
