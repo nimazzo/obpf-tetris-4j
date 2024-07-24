@@ -52,6 +52,8 @@ public class Tetrion extends StackPane {
     private long last = System.nanoTime();
     private long lastSimulated = System.nanoTime();
 
+    private static final boolean FPS_CAPPED = !Boolean.parseBoolean(System.getProperty("javafx.animation.fullspeed", "false"));
+
     public Tetrion() {
         canvas = new Canvas(COLS * PIXELS_PER_CELL + PADDING * 2, ROWS * PIXELS_PER_CELL + PADDING * 2);
         fpsCounter = new Text("0");
@@ -90,7 +92,7 @@ public class Tetrion extends StackPane {
         }
 
         // if 16 ms elapsed, simulate next frame
-        if (now - lastSimulated > 16_000_000) {
+        if (FPS_CAPPED || (now - lastSimulated > 16_000_000)) {
             MemorySegment key_state = createKeyState();
             ObpfNativeInterface.obpf_tetrion_simulate_next_frame(obpfTetrion, key_state);
             lastSimulated = now;
