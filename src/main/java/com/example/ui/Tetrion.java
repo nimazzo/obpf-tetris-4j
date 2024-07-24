@@ -15,7 +15,8 @@ import javafx.scene.text.Text;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 public class Tetrion extends StackPane {
     private static final int ROWS = ObpfNativeInterface.OBPF_MATRIX_HEIGHT();
@@ -47,11 +48,18 @@ public class Tetrion extends StackPane {
     private final Canvas canvas;
     private final MemorySegment obpfTetrion;
     private final MemorySegment obpfMatrix;
-    private final AtomicIntegerArray keysPressed = new AtomicIntegerArray(7);
-    private final Text fpsCounter;
+    private final AtomicBoolean[] keysPressed = Stream.generate(AtomicBoolean::new).limit(7).toArray(AtomicBoolean[]::new);
+
+    // calculate when to simulate next frame
     private long last = System.nanoTime();
     private long lastSimulated = System.nanoTime();
 
+    // fps calculcation
+    private long totalFrameTime = 0;
+    private int frameTimeIndex = 0;
+    private final Text fpsCounter;
+
+    // is FPS capped to 60?
     private static final boolean FPS_CAPPED = !Boolean.parseBoolean(System.getProperty("javafx.animation.fullspeed", "false"));
 
     public Tetrion() {
@@ -73,9 +81,6 @@ public class Tetrion extends StackPane {
             }
         }.start();
     }
-
-    long totalFrameTime = 0;
-    int frameTimeIndex = 0;
 
     public void redraw(long now) {
         totalFrameTime += now - last;
@@ -143,13 +148,13 @@ public class Tetrion extends StackPane {
 
     private MemorySegment createKeyState() {
         return ObpfNativeInterface.obpf_key_state_create(Arena.ofAuto(),
-                keysPressed.get(0) == 1,
-                keysPressed.get(1) == 1,
-                keysPressed.get(2) == 1,
-                keysPressed.get(3) == 1,
-                keysPressed.get(4) == 1,
-                keysPressed.get(5) == 1,
-                keysPressed.get(6) == 1);
+                keysPressed[0].get(),
+                keysPressed[1].get(),
+                keysPressed[2].get(),
+                keysPressed[3].get(),
+                keysPressed[4].get(),
+                keysPressed[5].get(),
+                keysPressed[6].get());
     }
 
     private void drawActivePiece() {
@@ -181,7 +186,7 @@ public class Tetrion extends StackPane {
     }
 
     public void setKeyState(int key, boolean pressed) {
-        keysPressed.set(key, pressed ? 1 : 0);
+        keysPressed[key].set(pressed);
     }
 
     private double scale(int value) {
