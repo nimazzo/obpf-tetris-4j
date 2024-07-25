@@ -1,5 +1,8 @@
 package com.example.network;
 
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GameServerConnection {
+public class GameServerConnection extends Service<Void> {
     private Socket socket;
     private static final Object WRITE_LOCK = new Object();
     private final LinkedBlockingQueue<ServerMessage> messageQueue = new LinkedBlockingQueue<>();
@@ -21,7 +24,13 @@ public class GameServerConnection {
 
     private final AtomicBoolean running = new AtomicBoolean(true);
 
-    public void connect(int gamePort) {
+    private final int gamePort;
+
+    public GameServerConnection(int gamePort) {
+        this.gamePort = gamePort;
+    }
+
+    private void connect() {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             socket = new Socket("localhost", gamePort);
             System.out.println("Connected to server");
@@ -58,7 +67,7 @@ public class GameServerConnection {
             var in = socket.getInputStream();
 
             int messageType;
-            while ((messageType = in.read()) != -1) {
+            while (running.get() && (messageType = in.read()) != -1) {
                 switch (MessageType.fromValue(messageType)) {
                     case GameStart -> readGameStartMessage(in);
                     case StateBroadcast -> readStateBroadcast(in);
@@ -68,7 +77,9 @@ public class GameServerConnection {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            if (running.get()) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -161,5 +172,16 @@ public class GameServerConnection {
             }
             messageBuffer.reset();
         }
+    }
+
+    @Override
+    protected Task<Void> createTask() {
+        return new Task<>() {
+            @Override
+            protected Void call() {
+                connect();
+                return null;
+            }
+        };
     }
 }
