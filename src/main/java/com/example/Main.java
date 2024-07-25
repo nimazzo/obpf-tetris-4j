@@ -37,7 +37,6 @@ public class Main {
     private static char[][] board;
 
     public static void main(String[] args) {
-
         width = ObpfNativeInterface.obpf_tetrion_width();
         height = ObpfNativeInterface.obpf_tetrion_height();
 

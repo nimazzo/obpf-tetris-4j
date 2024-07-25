@@ -1,7 +1,10 @@
 package com.example;
 
+import com.example.network.FakeLobbyServer;
 import com.example.ui.Tetrion;
 import javafx.application.Application;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -48,5 +51,20 @@ public class App extends Application {
 
         stage.sizeToScene();
         stage.show();
+
+        var service = new Service<Void>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected Void call() {
+                        var port = FakeLobbyServer.setupLobby(1);
+                        tetrion.gameStarted(port);
+                        return null;
+                    }
+                };
+            }
+        };
+        service.start();
     }
 }
