@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,12 +52,16 @@ public class GameServerConnection {
         heartbeatQueue.add(message);
     }
 
-    public ServerMessage pollMessage() {
+    public ServerMessage waitForMessage() {
         try {
             return messageQueue.take();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Optional<ServerMessage> pollMessage() {
+        return Optional.ofNullable(messageQueue.poll());
     }
 
     private void readServerMessages() {
@@ -89,7 +94,7 @@ public class GameServerConnection {
             var startFrame = new BigInteger(1, in.readNBytes(8)).longValue();
             var seed = new BigInteger(1, in.readNBytes(8));
 
-            messageQueue.add(new ServerMessage.GameStart(clientId, startFrame, seed));
+            messageQueue.add(new ServerMessage.GameStartMessage(clientId, startFrame, seed));
 
             synchronized (WRITE_LOCK) {
                 System.out.println("------------- Client <" + clientId + "> Game Start Message -------------");
@@ -119,7 +124,7 @@ public class GameServerConnection {
                 clientStates.put(clientId, states);
             }
 
-            messageQueue.add(new ServerMessage.StateBroadcast(messageFrame, numClients, clientStates));
+            messageQueue.add(new ServerMessage.StateBroadcastMessage(messageFrame, numClients, clientStates));
 
             synchronized (WRITE_LOCK) {
                 System.out.println("------------- Client <" + playerID + "> State Broadcast Message -------------");

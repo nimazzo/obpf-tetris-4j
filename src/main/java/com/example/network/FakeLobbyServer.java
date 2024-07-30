@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,6 +16,16 @@ public class FakeLobbyServer {
     private volatile int port;
     private final CountDownLatch serverOnline = new CountDownLatch(1);
     private final AtomicInteger numClients = new AtomicInteger(0);
+    private ProcessHandle handle;
+
+    public FakeLobbyServer() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (handle != null) {
+                System.out.println("Destroying GameServer");
+                handle.destroy();
+            }
+        }));
+    }
 
     public static void main(String[] args) {
         new FakeLobbyServer().setupLobby();
@@ -24,6 +35,21 @@ public class FakeLobbyServer {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             executor.execute(this::listenForGameServer);
             executor.execute(this::listenForClients);
+            executor.execute(this::launchGameServer);
+        }
+    }
+
+    private void launchGameServer() {
+        try {
+            var serverPath = Objects.requireNonNull(getClass().getResource("server.exe")).getPath();
+            var process = new ProcessBuilder(serverPath, "8080")
+                    .inheritIO()
+                    .start();
+            handle = process.toHandle();
+            var exit = process.waitFor();
+            System.out.println("GameServer exited with code " + exit);
+        } catch (InterruptedException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

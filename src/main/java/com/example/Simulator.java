@@ -10,8 +10,11 @@ import com.example.ui.Tetrion;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -19,12 +22,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-public class Simulator {
-    // is FPS capped to 60?
-    private static final boolean FPS_CAPPED = !Boolean.parseBoolean(System.getProperty("javafx.animation.fullspeed", "false"));
+record ClientInfo(int clientId, Tetrion tetrion, MemorySegment obpfTetrion, MemorySegment obpfMatrix) {
+}
 
-    private final Tetrion playerTetrion;
-    private final List<Tetrion> otherTetrions;
+public class Simulator {
+    private final List<Tetrion> tetrions;
+    private final Map<Integer, ClientInfo> players = new LinkedHashMap<>();
 
     // calculate when to simulate next frame
     private long lastSimulated = System.nanoTime();
@@ -36,43 +39,53 @@ public class Simulator {
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean[] keysPressed = Stream.generate(AtomicBoolean::new).limit(7).toArray(AtomicBoolean[]::new);
 
+    private BigInteger seed;
     private int clientId;
-    private long startFrame;
 
-    private MemorySegment obpfTetrion;
-    private MemorySegment obpfMatrix;
+    private final CountDownLatch gameFinished = new CountDownLatch(1);
 
-    private final CountDownLatch stop = new CountDownLatch(1);
-
-    public Simulator(Tetrion playerTetrion, List<Tetrion> otherTetrions) {
-        this.playerTetrion = playerTetrion;
-        this.otherTetrions = otherTetrions;
+    public Simulator(List<Tetrion> tetrions) {
+        this.tetrions = tetrions;
     }
 
     public void startSimulating(GameServerConnection conn) {
         this.conn = conn;
         CompletableFuture.runAsync(conn::connect, Executors.newVirtualThreadPerTaskExecutor());
 
-        var msg = conn.pollMessage();
-        if (msg instanceof ServerMessage.GameStart gameStartMessage) {
-            var seed = gameStartMessage.seed();
+        var msg = conn.waitForMessage();
+        if (msg instanceof ServerMessage.GameStartMessage gameStartMessage) {
+            seed = gameStartMessage.seed();
             clientId = gameStartMessage.clientId();
-            startFrame = gameStartMessage.startFrame();
+            // unused for now
+            var _ = gameStartMessage.startFrame();
 
-            obpfTetrion = ObpfNativeInterface.obpf_create_tetrion(seed.longValue());
-            obpfMatrix = ObpfNativeInterface.obpf_tetrion_matrix(obpfTetrion);
+            var obpfTetrion = ObpfNativeInterface.obpf_create_tetrion(seed.longValue());
+            var obpfMatrix = ObpfNativeInterface.obpf_tetrion_matrix(obpfTetrion);
+            players.put(clientId, new ClientInfo(clientId, tetrions.getFirst(), obpfTetrion, obpfMatrix));
             running.set(true);
         }
-        try (var executor = Executors.newSingleThreadScheduledExecutor()) {
+        try (var executor = Executors.newScheduledThreadPool(2)) {
             executor.scheduleAtFixedRate(this::simulate, 0, 1, TimeUnit.MILLISECONDS);
-            stop.await();
+            executor.scheduleAtFixedRate(this::readServerMessages, 0, 1, TimeUnit.MILLISECONDS);
+            gameFinished.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void readServerMessages() {
+        switch (conn.waitForMessage()) {
+            case ServerMessage.GameStartMessage _ -> {
+            }
+            case ServerMessage.HeartbeatMessage _ -> throw new IllegalStateException("This is unexpected");
+            case ServerMessage.StateBroadcastMessage stateBroadcastMessage ->
+                    updateOtherTetrions(stateBroadcastMessage.messageFrame().longValue(), stateBroadcastMessage.clientStates());
+        }
+    }
+
     public void stopSimulating() {
         running.set(false);
+        gameFinished.countDown();
         if (conn != null) {
             conn.stop();
         }
@@ -84,16 +97,18 @@ public class Simulator {
     }
 
     private void simulate() {
-        // if 16 ms elapsed, simulate next frame
         if (running.get()) {
             var now = System.nanoTime();
-            if (FPS_CAPPED || (now - lastSimulated > 16_000_000)) {
-                MemorySegment key_state = createKeyState();
+            if (now - lastSimulated > 16_000_000) {
+                var client = players.get(clientId);
+                client.tetrion().setCurrentFrame(frame);
+
                 keyStatesBuffer.add(Stream.of(keysPressed).mapToInt(b -> b.get() ? 1 : 0).toArray());
-                ObpfNativeInterface.obpf_tetrion_simulate_next_frame(obpfTetrion, key_state);
+                MemorySegment keyState = createKeyState(keysPressed);
+                ObpfNativeInterface.obpf_tetrion_simulate_next_frame(client.obpfTetrion(), keyState);
                 lastSimulated = now;
 
-                playerTetrion.update(createGameBoard());
+                client.tetrion().update(createGameBoard(client.obpfMatrix(), client.obpfTetrion()));
 
                 if (frame % 15 == 0) {
                     conn.addHeartbeatMessage(new ServerMessage.HeartbeatMessage(frame, keyStatesBuffer));
@@ -101,12 +116,38 @@ public class Simulator {
                 }
                 frame++;
             }
-        } else {
-            stop.countDown();
         }
     }
 
-    private List<Mino> createGameBoard() {
+    private void updateOtherTetrions(long frame, LinkedHashMap<Integer, List<Integer>> clientsKeyStates) {
+        for (Map.Entry<Integer, List<Integer>> e : clientsKeyStates.entrySet()) {
+            if (e.getKey() != clientId) {
+                var playerId = e.getKey();
+                var keyStates = e.getValue();
+                var otherPlayer = players.computeIfAbsent(playerId, _ -> {
+                    var otherTetrion = ObpfNativeInterface.obpf_create_tetrion(seed.longValue());
+                    var otherMatrix = ObpfNativeInterface.obpf_tetrion_matrix(otherTetrion);
+                    return new ClientInfo(playerId, tetrions.get(players.size()), otherTetrion, otherMatrix);
+                });
+                otherPlayer.tetrion().setCurrentFrame(frame);
+                for (var encoded : keyStates) {
+                    var keyState = createKeyState(decodeKeyState(encoded));
+                    ObpfNativeInterface.obpf_tetrion_simulate_next_frame(otherPlayer.obpfTetrion(), keyState);
+                    otherPlayer.tetrion().update(createGameBoard(otherPlayer.obpfMatrix(), otherPlayer.obpfTetrion()));
+                }
+            }
+        }
+    }
+
+    private AtomicBoolean[] decodeKeyState(Integer encoded) {
+        var keyStates = new AtomicBoolean[7];
+        for (int i = 0; i < 7; i++) {
+            keyStates[i] = new AtomicBoolean((encoded & (1 << i)) != 0);
+        }
+        return keyStates;
+    }
+
+    private List<Mino> createGameBoard(MemorySegment obpfMatrix, MemorySegment obpfTetrion) {
         List<Mino> gameBoard = new ArrayList<>(Tetrion.ROWS * Tetrion.COLS);
         // matrix
         try (var arena = Arena.ofConfined()) {
@@ -155,7 +196,7 @@ public class Simulator {
         return minos;
     }
 
-    private MemorySegment createKeyState() {
+    private MemorySegment createKeyState(AtomicBoolean[] keysPressed) {
         return ObpfNativeInterface.obpf_key_state_create(Arena.ofAuto(),
                 keysPressed[0].get(),
                 keysPressed[1].get(),

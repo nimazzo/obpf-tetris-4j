@@ -9,12 +9,14 @@ import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class App extends Application {
-    public static final int NUM_PLAYERS = 1;
+    public static final int NUM_PLAYERS = 2;
     private Simulator simulator;
 
     public static void main(String[] args) {
@@ -47,12 +49,12 @@ public class App extends Application {
     }
 
     private Scene createContent() {
-        var playerTetrion = new Tetrion();
-        var otherTetrions = Stream.generate(Tetrion::new).limit(NUM_PLAYERS - 1).toList();
-        simulator = new Simulator(playerTetrion, otherTetrions);
+        var tetrions = new ArrayList<>(List.of(new Tetrion()));
+        Stream.generate(Tetrion::new).limit(NUM_PLAYERS - 1).forEach(tetrions::add);
+        simulator = new Simulator(tetrions);
 
-        var hbox = new HBox(10.0, playerTetrion);
-        hbox.getChildren().addAll(otherTetrions);
+        var hbox = new HBox(10.0, tetrions.getFirst());
+        hbox.getChildren().addAll(tetrions.subList(1, tetrions.size()));
         var scene = new Scene(hbox);
         setupKeyboardInput(scene);
         return scene;
