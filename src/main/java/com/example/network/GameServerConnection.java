@@ -1,8 +1,5 @@
 package com.example.network;
 
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GameServerConnection extends Service<Void> {
+public class GameServerConnection {
     private Socket socket;
     private static final Object WRITE_LOCK = new Object();
     private final LinkedBlockingQueue<ServerMessage> messageQueue = new LinkedBlockingQueue<>();
@@ -30,7 +27,7 @@ public class GameServerConnection extends Service<Void> {
         this.gamePort = gamePort;
     }
 
-    private void connect() {
+    public void connect() {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             socket = new Socket("localhost", gamePort);
             System.out.println("Connected to server");
@@ -172,16 +169,5 @@ public class GameServerConnection extends Service<Void> {
             }
             messageBuffer.reset();
         }
-    }
-
-    @Override
-    protected Task<Void> createTask() {
-        return new Task<>() {
-            @Override
-            protected Void call() {
-                connect();
-                return null;
-            }
-        };
     }
 }

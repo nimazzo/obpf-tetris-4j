@@ -7,14 +7,12 @@ import com.example.network.GameServerConnection;
 import com.example.network.ServerMessage;
 import com.example.ui.Mino;
 import com.example.ui.Tetrion;
-import javafx.application.Platform;
 
-import java.io.DataInputStream;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +23,8 @@ public class Simulator {
     // is FPS capped to 60?
     private static final boolean FPS_CAPPED = !Boolean.parseBoolean(System.getProperty("javafx.animation.fullspeed", "false"));
 
-    private final List<Tetrion> tetrions;
+    private final Tetrion playerTetrion;
+    private final List<Tetrion> otherTetrions;
 
     // calculate when to simulate next frame
     private long lastSimulated = System.nanoTime();
@@ -45,13 +44,14 @@ public class Simulator {
 
     private final CountDownLatch stop = new CountDownLatch(1);
 
-    public Simulator(List<Tetrion> tetrions) {
-        this.tetrions = tetrions;
+    public Simulator(Tetrion playerTetrion, List<Tetrion> otherTetrions) {
+        this.playerTetrion = playerTetrion;
+        this.otherTetrions = otherTetrions;
     }
 
-    public void gameHasStarted(int port) {
-        conn = new GameServerConnection(port);
-        Platform.runLater(() -> conn.start());
+    public void startSimulating(GameServerConnection conn) {
+        this.conn = conn;
+        CompletableFuture.runAsync(conn::connect, Executors.newVirtualThreadPerTaskExecutor());
 
         var msg = conn.pollMessage();
         if (msg instanceof ServerMessage.GameStart gameStartMessage) {
@@ -73,7 +73,9 @@ public class Simulator {
 
     public void stopSimulating() {
         running.set(false);
-        conn.stop();
+        if (conn != null) {
+            conn.stop();
+        }
     }
 
     public void setKeyState(int key, boolean isPressed) {
@@ -91,7 +93,7 @@ public class Simulator {
                 ObpfNativeInterface.obpf_tetrion_simulate_next_frame(obpfTetrion, key_state);
                 lastSimulated = now;
 
-                tetrions.getFirst().update(createGameBoard());
+                playerTetrion.update(createGameBoard());
 
                 if (frame % 15 == 0) {
                     conn.addHeartbeatMessage(new ServerMessage.HeartbeatMessage(frame, keyStatesBuffer));
@@ -162,15 +164,5 @@ public class Simulator {
                 keysPressed[4].get(),
                 keysPressed[5].get(),
                 keysPressed[6].get());
-    }
-
-    public void tryConnect() {
-        System.out.println("Connecting to Server...");
-        try (var socket = new Socket("localhost", 8081)) {
-            var in = new DataInputStream(socket.getInputStream());
-            gameHasStarted(in.readInt());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

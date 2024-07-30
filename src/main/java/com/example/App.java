@@ -1,31 +1,64 @@
 package com.example;
 
+import com.example.network.GameServerConnection;
 import com.example.ui.Tetrion;
 import javafx.application.Application;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.io.DataInputStream;
+import java.net.Socket;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class App extends Application {
-    public static final int NUM_PLAYERS = 2;
+    public static final int NUM_PLAYERS = 1;
     private Simulator simulator;
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    @Override
+    public void start(Stage stage) {
+        stage.setScene(createContent());
+        stage.setTitle("Obpf TetrisJ");
+
+        stage.sizeToScene();
+        stage.show();
+
+        CompletableFuture.runAsync(this::connectToLobbyServer, Executors.newVirtualThreadPerTaskExecutor());
+
+        stage.setOnCloseRequest(_ -> simulator.stopSimulating());
+    }
+
+    private void connectToLobbyServer() {
+        System.out.println("Connecting to Server...");
+        try (var socket = new Socket("localhost", 8081)) {
+            var in = new DataInputStream(socket.getInputStream());
+            var port = in.readInt();
+            var conn = new GameServerConnection(port);
+            simulator.startSimulating(conn);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Scene createContent() {
-        var tetrions = Stream.generate(Tetrion::new).limit(NUM_PLAYERS).toList();
-        simulator = new Simulator(tetrions);
+        var playerTetrion = new Tetrion();
+        var otherTetrions = Stream.generate(Tetrion::new).limit(NUM_PLAYERS - 1).toList();
+        simulator = new Simulator(playerTetrion, otherTetrions);
 
-        var hbox = new HBox(10.0);
-        hbox.getChildren().addAll(tetrions);
+        var hbox = new HBox(10.0, playerTetrion);
+        hbox.getChildren().addAll(otherTetrions);
         var scene = new Scene(hbox);
+        setupKeyboardInput(scene);
+        return scene;
+    }
 
+    private void setupKeyboardInput(Scene scene) {
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case LEFT -> simulator.setKeyState(0, true);
@@ -49,31 +82,5 @@ public class App extends Application {
                 case ENTER -> simulator.setKeyState(6, false);
             }
         });
-
-        return scene;
-    }
-
-    @Override
-    public void start(Stage stage) {
-        stage.setScene(createContent());
-        stage.setTitle("Obpf TetrisJ");
-
-        stage.sizeToScene();
-        stage.show();
-
-        new Service<Void>() {
-            @Override
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    @Override
-                    protected Void call() {
-                        simulator.tryConnect();
-                        return null;
-                    }
-                };
-            }
-        }.start();
-
-        stage.setOnCloseRequest(_ -> simulator.stopSimulating());
     }
 }

@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FakeLobbyServer {
     private volatile int port;
     private final CountDownLatch serverOnline = new CountDownLatch(1);
-
     private final AtomicInteger numClients = new AtomicInteger(0);
 
     public static void main(String[] args) {
@@ -66,9 +65,9 @@ public class FakeLobbyServer {
         try {
             System.out.println("Client connected");
             var out = new DataOutputStream(socket.getOutputStream());
-            serverOnline.countDown();
+            serverOnline.await();
             out.writeInt(port);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
