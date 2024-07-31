@@ -9,14 +9,12 @@ import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class App extends Application {
-    public static final int NUM_PLAYERS = 2;
+    public static final int NUM_PLAYERS = 4;
     private Simulator simulator;
 
     public static void main(String[] args) {
@@ -49,8 +47,7 @@ public class App extends Application {
     }
 
     private Scene createContent() {
-        var tetrions = new ArrayList<>(List.of(new Tetrion()));
-        Stream.generate(Tetrion::new).limit(NUM_PLAYERS - 1).forEach(tetrions::add);
+        var tetrions = Stream.generate(Tetrion::new).limit(NUM_PLAYERS).toList();
         simulator = new Simulator(tetrions);
 
         var hbox = new HBox(10.0, tetrions.getFirst());
