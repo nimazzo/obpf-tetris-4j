@@ -13,6 +13,7 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Tetrion extends StackPane {
     public static final int ROWS = ObpfNativeInterface.OBPF_MATRIX_HEIGHT();
@@ -52,7 +53,7 @@ public class Tetrion extends StackPane {
     private int frameTimeIndex = 0;
     private long last = System.nanoTime();
 
-    private volatile List<Mino> gameBoard = new ArrayList<>();
+    private final List<Mino> gameBoard = new ArrayList<>(ROWS * COLS);
 
     public Tetrion() {
         canvas = new Canvas(COLS * PIXELS_PER_CELL + PADDING * 2, ROWS * PIXELS_PER_CELL + PADDING * 2);
@@ -70,8 +71,10 @@ public class Tetrion extends StackPane {
         }.start();
     }
 
-    public void update(List<Mino> gameBoard) {
-        this.gameBoard = gameBoard;
+    public void update(Consumer<List<Mino>> updateGameBoard) {
+        synchronized (gameBoard) {
+            updateGameBoard.accept(gameBoard);
+        }
     }
 
     private void redraw(long now) {
@@ -113,8 +116,10 @@ public class Tetrion extends StackPane {
     }
 
     private void drawMinos() {
-        for (var mino : gameBoard) {
-            drawMino(mino.x(), mino.y(), mino.type(), mino.ghostPiece());
+        synchronized (gameBoard) {
+            for (var mino : gameBoard) {
+                drawMino(mino.x(), mino.y(), mino.type(), mino.ghostPiece());
+            }
         }
     }
 

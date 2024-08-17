@@ -94,7 +94,7 @@ public class GameServerConnection {
             var startFrame = new BigInteger(1, in.readNBytes(8)).longValue();
             var seed = new BigInteger(1, in.readNBytes(8));
 
-            messageQueue.add(new ServerMessage.GameStartMessage(clientId, startFrame, seed));
+            messageQueue.add(new ServerMessage.GameStartMessage(clientId, startFrame, seed.longValue()));
 
             synchronized (WRITE_LOCK) {
                 System.out.println("------------- Client <" + clientId + "> Game Start Message -------------");
@@ -124,7 +124,7 @@ public class GameServerConnection {
                 clientStates.put(clientId, states);
             }
 
-            messageQueue.add(new ServerMessage.StateBroadcastMessage(messageFrame, numClients, clientStates));
+            messageQueue.add(new ServerMessage.StateBroadcastMessage(messageFrame.longValue(), numClients, clientStates));
 
             synchronized (WRITE_LOCK) {
                 System.out.println("------------- Client <" + playerID + "> State Broadcast Message -------------");

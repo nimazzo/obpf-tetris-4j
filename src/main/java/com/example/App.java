@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class App extends Application {
-    public static final int NUM_PLAYERS = 4;
+    public static final int NUM_PLAYERS = 2;
     private Simulator simulator;
 
     public static void main(String[] args) {
