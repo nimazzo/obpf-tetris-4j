@@ -50,8 +50,8 @@ public class App extends Application {
         var tetrions = Stream.generate(Tetrion::new).limit(NUM_PLAYERS).toList();
         simulator = new Simulator(tetrions);
 
-        var hbox = new HBox(10.0, tetrions.getFirst());
-        hbox.getChildren().addAll(tetrions.subList(1, tetrions.size()));
+        var hbox = new HBox(10.0);
+        hbox.getChildren().addAll(tetrions);
         var scene = new Scene(hbox);
         setupKeyboardInput(scene);
         return scene;
