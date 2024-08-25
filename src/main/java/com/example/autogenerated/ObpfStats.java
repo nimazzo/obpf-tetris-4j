@@ -15,19 +15,23 @@ import static java.lang.foreign.MemoryLayout.PathElement.*;
 /**
  * {@snippet lang=c :
  * struct {
- *     ObpfTetrominoType types[6];
+ *     uint64_t score;
+ *     uint32_t lines_cleared;
+ *     uint32_t level;
  * }
  * }
  */
-public class ObpfPreviewPieces {
+public class ObpfStats {
 
-    ObpfPreviewPieces() {
+    ObpfStats() {
         // Should not be called directly
     }
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
-        MemoryLayout.sequenceLayout(6, ObpfNativeInterface.C_INT).withName("types")
-    ).withName("$anon$26:13");
+        ObpfNativeInterface.C_LONG_LONG.withName("score"),
+        ObpfNativeInterface.C_INT.withName("lines_cleared"),
+        ObpfNativeInterface.C_INT.withName("level")
+    ).withName("$anon$9:9");
 
     /**
      * The layout of this struct
@@ -36,81 +40,136 @@ public class ObpfPreviewPieces {
         return $LAYOUT;
     }
 
-    private static final SequenceLayout types$LAYOUT = (SequenceLayout)$LAYOUT.select(groupElement("types"));
+    private static final OfLong score$LAYOUT = (OfLong)$LAYOUT.select(groupElement("score"));
 
     /**
      * Layout for field:
      * {@snippet lang=c :
-     * ObpfTetrominoType types[6]
+     * uint64_t score
      * }
      */
-    public static final SequenceLayout types$layout() {
-        return types$LAYOUT;
+    public static final OfLong score$layout() {
+        return score$LAYOUT;
     }
 
-    private static final long types$OFFSET = 0;
+    private static final long score$OFFSET = 0;
 
     /**
      * Offset for field:
      * {@snippet lang=c :
-     * ObpfTetrominoType types[6]
+     * uint64_t score
      * }
      */
-    public static final long types$offset() {
-        return types$OFFSET;
+    public static final long score$offset() {
+        return score$OFFSET;
     }
 
     /**
      * Getter for field:
      * {@snippet lang=c :
-     * ObpfTetrominoType types[6]
+     * uint64_t score
      * }
      */
-    public static MemorySegment types(MemorySegment struct) {
-        return struct.asSlice(types$OFFSET, types$LAYOUT.byteSize());
+    public static long score(MemorySegment struct) {
+        return struct.get(score$LAYOUT, score$OFFSET);
     }
 
     /**
      * Setter for field:
      * {@snippet lang=c :
-     * ObpfTetrominoType types[6]
+     * uint64_t score
      * }
      */
-    public static void types(MemorySegment struct, MemorySegment fieldValue) {
-        MemorySegment.copy(fieldValue, 0L, struct, types$OFFSET, types$LAYOUT.byteSize());
+    public static void score(MemorySegment struct, long fieldValue) {
+        struct.set(score$LAYOUT, score$OFFSET, fieldValue);
     }
 
-    private static long[] types$DIMS = { 6 };
+    private static final OfInt lines_cleared$LAYOUT = (OfInt)$LAYOUT.select(groupElement("lines_cleared"));
 
     /**
-     * Dimensions for array field:
+     * Layout for field:
      * {@snippet lang=c :
-     * ObpfTetrominoType types[6]
+     * uint32_t lines_cleared
      * }
      */
-    public static long[] types$dimensions() {
-        return types$DIMS;
-    }
-    private static final VarHandle types$ELEM_HANDLE = types$LAYOUT.varHandle(sequenceElement());
-
-    /**
-     * Indexed getter for field:
-     * {@snippet lang=c :
-     * ObpfTetrominoType types[6]
-     * }
-     */
-    public static int types(MemorySegment struct, long index0) {
-        return (int)types$ELEM_HANDLE.get(struct, 0L, index0);
+    public static final OfInt lines_cleared$layout() {
+        return lines_cleared$LAYOUT;
     }
 
+    private static final long lines_cleared$OFFSET = 8;
+
     /**
-     * Indexed setter for field:
+     * Offset for field:
      * {@snippet lang=c :
-     * ObpfTetrominoType types[6]
+     * uint32_t lines_cleared
      * }
      */
-    public static void types(MemorySegment struct, long index0, int fieldValue) {
-        types$ELEM_HANDLE.set(struct, 0L, index0, fieldValue);
+    public static final long lines_cleared$offset() {
+        return lines_cleared$OFFSET;
+    }
+
+    /**
+     * Getter for field:
+     * {@snippet lang=c :
+     * uint32_t lines_cleared
+     * }
+     */
+    public static int lines_cleared(MemorySegment struct) {
+        return struct.get(lines_cleared$LAYOUT, lines_cleared$OFFSET);
+    }
+
+    /**
+     * Setter for field:
+     * {@snippet lang=c :
+     * uint32_t lines_cleared
+     * }
+     */
+    public static void lines_cleared(MemorySegment struct, int fieldValue) {
+        struct.set(lines_cleared$LAYOUT, lines_cleared$OFFSET, fieldValue);
+    }
+
+    private static final OfInt level$LAYOUT = (OfInt)$LAYOUT.select(groupElement("level"));
+
+    /**
+     * Layout for field:
+     * {@snippet lang=c :
+     * uint32_t level
+     * }
+     */
+    public static final OfInt level$layout() {
+        return level$LAYOUT;
+    }
+
+    private static final long level$OFFSET = 12;
+
+    /**
+     * Offset for field:
+     * {@snippet lang=c :
+     * uint32_t level
+     * }
+     */
+    public static final long level$offset() {
+        return level$OFFSET;
+    }
+
+    /**
+     * Getter for field:
+     * {@snippet lang=c :
+     * uint32_t level
+     * }
+     */
+    public static int level(MemorySegment struct) {
+        return struct.get(level$LAYOUT, level$OFFSET);
+    }
+
+    /**
+     * Setter for field:
+     * {@snippet lang=c :
+     * uint32_t level
+     * }
+     */
+    public static void level(MemorySegment struct, int fieldValue) {
+        struct.set(level$LAYOUT, level$OFFSET, fieldValue);
     }
 
     /**

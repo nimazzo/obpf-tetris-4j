@@ -27,7 +27,7 @@ public class ObpfKeyState {
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
         ObpfNativeInterface.C_CHAR.withName("bitmask")
-    ).withName("$anon$35:13");
+    ).withName("$anon$34:13");
 
     /**
      * The layout of this struct

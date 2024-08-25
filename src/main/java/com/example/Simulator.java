@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-record PlayerInfo(int playerId, Tetrion tetrion, MemorySegment obpfTetrion, MemorySegment obpfMatrix) {
+record PlayerInfo(int playerId, Tetrion tetrion, MemorySegment obpfTetrion) {
 }
 
 public class Simulator {
@@ -59,8 +59,7 @@ public class Simulator {
             var _ = gameStartMessage.startFrame();
 
             var obpfTetrion = ObpfNativeInterface.obpf_create_tetrion(seed);
-            var obpfMatrix = ObpfNativeInterface.obpf_tetrion_matrix(obpfTetrion);
-            players.put(clientId, new PlayerInfo(clientId, tetrions.getFirst(), obpfTetrion, obpfMatrix));
+            players.put(clientId, new PlayerInfo(clientId, tetrions.getFirst(), obpfTetrion));
             running.set(true);
         }
         try (var executor = Executors.newScheduledThreadPool(2)) {
@@ -107,7 +106,7 @@ public class Simulator {
 
                 client.tetrion().update(gameBoard -> {
                     gameBoard.clear();
-                    fillGameBoard(client.obpfMatrix(), client.obpfTetrion(), gameBoard);
+                    fillGameBoard(client.obpfTetrion(), gameBoard);
                 });
 
                 if (frame % 15 == 0) {
@@ -127,8 +126,7 @@ public class Simulator {
                     var keyStates = entry.getValue();
                     var player = players.computeIfAbsent(playerId, _ -> {
                         var tetrion = ObpfNativeInterface.obpf_create_tetrion(seed);
-                        var matrix = ObpfNativeInterface.obpf_tetrion_matrix(tetrion);
-                        return new PlayerInfo(playerId, tetrions.get(players.size()), tetrion, matrix);
+                        return new PlayerInfo(playerId, tetrions.get(players.size()), tetrion);
                     });
                     player.tetrion().setCurrentFrame(frame);
                     executor.execute(() -> {
@@ -140,7 +138,7 @@ public class Simulator {
                             ObpfNativeInterface.obpf_tetrion_simulate_next_frame(player.obpfTetrion(), keyState);
                             player.tetrion().update(gameBoard -> {
                                 gameBoard.clear();
-                                fillGameBoard(player.obpfMatrix(), player.obpfTetrion(), gameBoard);
+                                fillGameBoard(player.obpfTetrion(), gameBoard);
                             });
                             try {
                                 // calculate remaining time until next frame should be simulated
@@ -164,7 +162,7 @@ public class Simulator {
         return keyStates;
     }
 
-    private void fillGameBoard(MemorySegment obpfMatrix, MemorySegment obpfTetrion, List<Mino> gameBoard) {
+    private void fillGameBoard(MemorySegment obpfTetrion, List<Mino> gameBoard) {
         // matrix
         try (var arena = Arena.ofConfined()) {
             var position = ObpfVec2.allocate(arena);
@@ -172,7 +170,7 @@ public class Simulator {
                 for (byte x = 0; x < Tetrion.COLS; x++) {
                     ObpfVec2.x(position, x);
                     ObpfVec2.y(position, y);
-                    var type = ObpfNativeInterface.obpf_matrix_get(obpfMatrix, position);
+                    var type = ObpfNativeInterface.obpf_tetrion_matrix_get(obpfTetrion, position);
                     if (type != 0) {
                         gameBoard.add(new Mino(x, y, type, false));
                     }

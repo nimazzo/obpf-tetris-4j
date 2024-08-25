@@ -16,10 +16,7 @@ import static java.lang.foreign.MemoryLayout.PathElement.*;
  * {@snippet lang=c :
  * struct {
  *     uint8_t count;
- *     uint8_t first;
- *     uint8_t second;
- *     uint8_t third;
- *     uint8_t fourth;
+ *     uint8_t lines[4];
  *     uint64_t countdown;
  *     uint64_t delay;
  * }
@@ -33,14 +30,11 @@ public class ObpfLineClearDelayState {
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
         ObpfNativeInterface.C_CHAR.withName("count"),
-        ObpfNativeInterface.C_CHAR.withName("first"),
-        ObpfNativeInterface.C_CHAR.withName("second"),
-        ObpfNativeInterface.C_CHAR.withName("third"),
-        ObpfNativeInterface.C_CHAR.withName("fourth"),
+        MemoryLayout.sequenceLayout(4, ObpfNativeInterface.C_CHAR).withName("lines"),
         MemoryLayout.paddingLayout(3),
         ObpfNativeInterface.C_LONG_LONG.withName("countdown"),
         ObpfNativeInterface.C_LONG_LONG.withName("delay")
-    ).withName("$anon$17:13");
+    ).withName("$anon$19:13");
 
     /**
      * The layout of this struct
@@ -93,180 +87,81 @@ public class ObpfLineClearDelayState {
         struct.set(count$LAYOUT, count$OFFSET, fieldValue);
     }
 
-    private static final OfByte first$LAYOUT = (OfByte)$LAYOUT.select(groupElement("first"));
+    private static final SequenceLayout lines$LAYOUT = (SequenceLayout)$LAYOUT.select(groupElement("lines"));
 
     /**
      * Layout for field:
      * {@snippet lang=c :
-     * uint8_t first
+     * uint8_t lines[4]
      * }
      */
-    public static final OfByte first$layout() {
-        return first$LAYOUT;
+    public static final SequenceLayout lines$layout() {
+        return lines$LAYOUT;
     }
 
-    private static final long first$OFFSET = 1;
+    private static final long lines$OFFSET = 1;
 
     /**
      * Offset for field:
      * {@snippet lang=c :
-     * uint8_t first
+     * uint8_t lines[4]
      * }
      */
-    public static final long first$offset() {
-        return first$OFFSET;
+    public static final long lines$offset() {
+        return lines$OFFSET;
     }
 
     /**
      * Getter for field:
      * {@snippet lang=c :
-     * uint8_t first
+     * uint8_t lines[4]
      * }
      */
-    public static byte first(MemorySegment struct) {
-        return struct.get(first$LAYOUT, first$OFFSET);
+    public static MemorySegment lines(MemorySegment struct) {
+        return struct.asSlice(lines$OFFSET, lines$LAYOUT.byteSize());
     }
 
     /**
      * Setter for field:
      * {@snippet lang=c :
-     * uint8_t first
+     * uint8_t lines[4]
      * }
      */
-    public static void first(MemorySegment struct, byte fieldValue) {
-        struct.set(first$LAYOUT, first$OFFSET, fieldValue);
+    public static void lines(MemorySegment struct, MemorySegment fieldValue) {
+        MemorySegment.copy(fieldValue, 0L, struct, lines$OFFSET, lines$LAYOUT.byteSize());
     }
 
-    private static final OfByte second$LAYOUT = (OfByte)$LAYOUT.select(groupElement("second"));
+    private static long[] lines$DIMS = { 4 };
 
     /**
-     * Layout for field:
+     * Dimensions for array field:
      * {@snippet lang=c :
-     * uint8_t second
+     * uint8_t lines[4]
      * }
      */
-    public static final OfByte second$layout() {
-        return second$LAYOUT;
+    public static long[] lines$dimensions() {
+        return lines$DIMS;
     }
-
-    private static final long second$OFFSET = 2;
-
-    /**
-     * Offset for field:
-     * {@snippet lang=c :
-     * uint8_t second
-     * }
-     */
-    public static final long second$offset() {
-        return second$OFFSET;
-    }
+    private static final VarHandle lines$ELEM_HANDLE = lines$LAYOUT.varHandle(sequenceElement());
 
     /**
-     * Getter for field:
+     * Indexed getter for field:
      * {@snippet lang=c :
-     * uint8_t second
+     * uint8_t lines[4]
      * }
      */
-    public static byte second(MemorySegment struct) {
-        return struct.get(second$LAYOUT, second$OFFSET);
+    public static byte lines(MemorySegment struct, long index0) {
+        return (byte)lines$ELEM_HANDLE.get(struct, 0L, index0);
     }
 
     /**
-     * Setter for field:
+     * Indexed setter for field:
      * {@snippet lang=c :
-     * uint8_t second
+     * uint8_t lines[4]
      * }
      */
-    public static void second(MemorySegment struct, byte fieldValue) {
-        struct.set(second$LAYOUT, second$OFFSET, fieldValue);
-    }
-
-    private static final OfByte third$LAYOUT = (OfByte)$LAYOUT.select(groupElement("third"));
-
-    /**
-     * Layout for field:
-     * {@snippet lang=c :
-     * uint8_t third
-     * }
-     */
-    public static final OfByte third$layout() {
-        return third$LAYOUT;
-    }
-
-    private static final long third$OFFSET = 3;
-
-    /**
-     * Offset for field:
-     * {@snippet lang=c :
-     * uint8_t third
-     * }
-     */
-    public static final long third$offset() {
-        return third$OFFSET;
-    }
-
-    /**
-     * Getter for field:
-     * {@snippet lang=c :
-     * uint8_t third
-     * }
-     */
-    public static byte third(MemorySegment struct) {
-        return struct.get(third$LAYOUT, third$OFFSET);
-    }
-
-    /**
-     * Setter for field:
-     * {@snippet lang=c :
-     * uint8_t third
-     * }
-     */
-    public static void third(MemorySegment struct, byte fieldValue) {
-        struct.set(third$LAYOUT, third$OFFSET, fieldValue);
-    }
-
-    private static final OfByte fourth$LAYOUT = (OfByte)$LAYOUT.select(groupElement("fourth"));
-
-    /**
-     * Layout for field:
-     * {@snippet lang=c :
-     * uint8_t fourth
-     * }
-     */
-    public static final OfByte fourth$layout() {
-        return fourth$LAYOUT;
-    }
-
-    private static final long fourth$OFFSET = 4;
-
-    /**
-     * Offset for field:
-     * {@snippet lang=c :
-     * uint8_t fourth
-     * }
-     */
-    public static final long fourth$offset() {
-        return fourth$OFFSET;
-    }
-
-    /**
-     * Getter for field:
-     * {@snippet lang=c :
-     * uint8_t fourth
-     * }
-     */
-    public static byte fourth(MemorySegment struct) {
-        return struct.get(fourth$LAYOUT, fourth$OFFSET);
-    }
-
-    /**
-     * Setter for field:
-     * {@snippet lang=c :
-     * uint8_t fourth
-     * }
-     */
-    public static void fourth(MemorySegment struct, byte fieldValue) {
-        struct.set(fourth$LAYOUT, fourth$OFFSET, fieldValue);
+    public static void lines(MemorySegment struct, long index0, byte fieldValue) {
+        lines$ELEM_HANDLE.set(struct, 0L, index0, fieldValue);
     }
 
     private static final OfLong countdown$LAYOUT = (OfLong)$LAYOUT.select(groupElement("countdown"));

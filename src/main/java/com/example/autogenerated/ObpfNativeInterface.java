@@ -20,15 +20,15 @@ public class ObpfNativeInterface {
     static final boolean TRACE_DOWNCALLS = Boolean.getBoolean("jextract.trace.downcalls");
 
     static void traceDowncall(String name, Object... args) {
-         String traceArgs = Arrays.stream(args)
-                       .map(Object::toString)
-                       .collect(Collectors.joining(", "));
-         System.out.printf("%s(%s)\n", name, traceArgs);
+        String traceArgs = Arrays.stream(args)
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        System.out.printf("%s(%s)\n", name, traceArgs);
     }
 
     static MemorySegment findOrThrow(String symbol) {
         return SYMBOL_LOOKUP.find(symbol)
-            .orElseThrow(() -> new UnsatisfiedLinkError("unresolved symbol: " + symbol));
+                .orElseThrow(() -> new UnsatisfiedLinkError("unresolved symbol: " + symbol));
     }
 
     static MethodHandle upcallHandle(Class<?> fi, String name, FunctionDescriptor fdesc) {
@@ -68,209 +68,348 @@ public class ObpfNativeInterface {
             .withTargetLayout(MemoryLayout.sequenceLayout(java.lang.Long.MAX_VALUE, JAVA_BYTE));
     public static final ValueLayout.OfInt C_LONG = ValueLayout.JAVA_INT;
     public static final ValueLayout.OfDouble C_LONG_DOUBLE = ValueLayout.JAVA_DOUBLE;
-    private static final int OBPF_MATRIX_WIDTH = (int)10L;
+    private static final int OBPF_MATRIX_WIDTH = (int) 10L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define OBPF_MATRIX_WIDTH 10
-     * }
+     *}
      */
     public static int OBPF_MATRIX_WIDTH() {
         return OBPF_MATRIX_WIDTH;
     }
-    private static final int OBPF_MATRIX_HEIGHT = (int)22L;
+
+    private static final int OBPF_MATRIX_HEIGHT = (int) 22L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define OBPF_MATRIX_HEIGHT 22
-     * }
+     *}
      */
     public static int OBPF_MATRIX_HEIGHT() {
         return OBPF_MATRIX_HEIGHT;
     }
-    private static final int true_ = (int)1L;
+
+    private static final int true_ = (int) 1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define true 1
-     * }
+     *}
      */
     public static int true_() {
         return true_;
     }
-    private static final int false_ = (int)0L;
+
+    private static final int false_ = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define false 0
-     * }
+     *}
      */
     public static int false_() {
         return false_;
     }
-    private static final int __bool_true_false_are_defined = (int)1L;
+
+    private static final int __bool_true_false_are_defined = (int) 1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define __bool_true_false_are_defined 1
-     * }
+     *}
      */
     public static int __bool_true_false_are_defined() {
         return __bool_true_false_are_defined;
     }
-    private static final int _VCRT_COMPILER_PREPROCESSOR = (int)1L;
+
+    private static final int _VCRT_COMPILER_PREPROCESSOR = (int) 1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _VCRT_COMPILER_PREPROCESSOR 1
-     * }
+     *}
      */
     public static int _VCRT_COMPILER_PREPROCESSOR() {
         return _VCRT_COMPILER_PREPROCESSOR;
     }
-    private static final int _SAL_VERSION = (int)20L;
+
+    private static final int _SAL_VERSION = (int) 20L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _SAL_VERSION 20
-     * }
+     *}
      */
     public static int _SAL_VERSION() {
         return _SAL_VERSION;
     }
-    private static final int __SAL_H_VERSION = (int)180000000L;
+
+    private static final int __SAL_H_VERSION = (int) 180000000L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define __SAL_H_VERSION 180000000
-     * }
+     *}
      */
     public static int __SAL_H_VERSION() {
         return __SAL_H_VERSION;
     }
-    private static final int _USE_DECLSPECS_FOR_SAL = (int)0L;
+
+    private static final int _USE_DECLSPECS_FOR_SAL = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _USE_DECLSPECS_FOR_SAL 0
-     * }
+     *}
      */
     public static int _USE_DECLSPECS_FOR_SAL() {
         return _USE_DECLSPECS_FOR_SAL;
     }
-    private static final int _USE_ATTRIBUTES_FOR_SAL = (int)0L;
+
+    private static final int _USE_ATTRIBUTES_FOR_SAL = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _USE_ATTRIBUTES_FOR_SAL 0
-     * }
+     *}
      */
     public static int _USE_ATTRIBUTES_FOR_SAL() {
         return _USE_ATTRIBUTES_FOR_SAL;
     }
-    private static final int _CRT_PACKING = (int)8L;
+
+    private static final int _CRT_PACKING = (int) 8L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _CRT_PACKING 8
-     * }
+     *}
      */
     public static int _CRT_PACKING() {
         return _CRT_PACKING;
     }
-    private static final int _HAS_EXCEPTIONS = (int)1L;
+
+    private static final int _HAS_EXCEPTIONS = (int) 1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _HAS_EXCEPTIONS 1
-     * }
+     *}
      */
     public static int _HAS_EXCEPTIONS() {
         return _HAS_EXCEPTIONS;
     }
-    private static final int _HAS_CXX17 = (int)0L;
+
+    private static final int _HAS_CXX17 = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _HAS_CXX17 0
-     * }
+     *}
      */
     public static int _HAS_CXX17() {
         return _HAS_CXX17;
     }
-    private static final int _HAS_CXX20 = (int)0L;
+
+    private static final int _HAS_CXX20 = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _HAS_CXX20 0
-     * }
+     *}
      */
     public static int _HAS_CXX20() {
         return _HAS_CXX20;
     }
-    private static final int _HAS_CXX23 = (int)0L;
+
+    private static final int _HAS_CXX23 = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _HAS_CXX23 0
-     * }
+     *}
      */
     public static int _HAS_CXX23() {
         return _HAS_CXX23;
     }
-    private static final int _HAS_NODISCARD = (int)0L;
+
+    private static final int _HAS_NODISCARD = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _HAS_NODISCARD 0
-     * }
+     *}
      */
     public static int _HAS_NODISCARD() {
         return _HAS_NODISCARD;
     }
-    private static final int WCHAR_MIN = (int)0L;
+
+    private static final int WCHAR_MIN = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define WCHAR_MIN 0
-     * }
+     *}
      */
     public static int WCHAR_MIN() {
         return WCHAR_MIN;
     }
-    private static final int WCHAR_MAX = (int)65535L;
+
+    private static final int WCHAR_MAX = (int) 65535L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define WCHAR_MAX 65535
-     * }
+     *}
      */
     public static int WCHAR_MAX() {
         return WCHAR_MAX;
     }
-    private static final int WINT_MIN = (int)0L;
+
+    private static final int WINT_MIN = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define WINT_MIN 0
-     * }
+     *}
      */
     public static int WINT_MIN() {
         return WINT_MIN;
     }
-    private static final int WINT_MAX = (int)65535L;
+
+    private static final int WINT_MAX = (int) 65535L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define WINT_MAX 65535
-     * }
+     *}
      */
     public static int WINT_MAX() {
         return WINT_MAX;
     }
+
+    private static final int OBPF_ACTION_ROTATE_CW = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_ROTATE_CW = 0
+     *}
+     */
+    public static int OBPF_ACTION_ROTATE_CW() {
+        return OBPF_ACTION_ROTATE_CW;
+    }
+
+    private static final int OBPF_ACTION_ROTATE_CCW = (int) 1L;
+
+    /**
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_ROTATE_CCW = 1
+     *}
+     */
+    public static int OBPF_ACTION_ROTATE_CCW() {
+        return OBPF_ACTION_ROTATE_CCW;
+    }
+
+    private static final int OBPF_ACTION_HARD_DROP = (int) 2L;
+
+    /**
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_HARD_DROP = 2
+     *}
+     */
+    public static int OBPF_ACTION_HARD_DROP() {
+        return OBPF_ACTION_HARD_DROP;
+    }
+
+    private static final int OBPF_ACTION_TOUCH = (int) 3L;
+
+    /**
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_TOUCH = 3
+     *}
+     */
+    public static int OBPF_ACTION_TOUCH() {
+        return OBPF_ACTION_TOUCH;
+    }
+
+    private static final int OBPF_ACTION_CLEAR1 = (int) 4L;
+
+    /**
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_CLEAR1 = 4
+     *}
+     */
+    public static int OBPF_ACTION_CLEAR1() {
+        return OBPF_ACTION_CLEAR1;
+    }
+
+    private static final int OBPF_ACTION_CLEAR2 = (int) 5L;
+
+    /**
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_CLEAR2 = 5
+     *}
+     */
+    public static int OBPF_ACTION_CLEAR2() {
+        return OBPF_ACTION_CLEAR2;
+    }
+
+    private static final int OBPF_ACTION_CLEAR3 = (int) 6L;
+
+    /**
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_CLEAR3 = 6
+     *}
+     */
+    public static int OBPF_ACTION_CLEAR3() {
+        return OBPF_ACTION_CLEAR3;
+    }
+
+    private static final int OBPF_ACTION_CLEAR4 = (int) 7L;
+
+    /**
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_CLEAR4 = 7
+     *}
+     */
+    public static int OBPF_ACTION_CLEAR4() {
+        return OBPF_ACTION_CLEAR4;
+    }
+
+    private static final int OBPF_ACTION_ALL_CLEAR = (int) 8L;
+
+    /**
+     * {@snippet lang = c:
+     * enum <anonymous>.OBPF_ACTION_ALL_CLEAR = 8
+     *}
+     */
+    public static int OBPF_ACTION_ALL_CLEAR() {
+        return OBPF_ACTION_ALL_CLEAR;
+    }
+
+    /**
+     * {@snippet lang = c:
      * typedef unsigned long long uintptr_t
-     * }
+     *}
      */
     public static final OfLong uintptr_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef char *va_list
-     * }
+     *}
      */
     public static final AddressLayout va_list = ObpfNativeInterface.C_POINTER;
 
     /**
      * Variadic invoker class for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __va_start(va_list *, ...)
-     * }
+     *}
      */
     public static class __va_start {
         private static final FunctionDescriptor BASE_DESC = FunctionDescriptor.ofVoid(
                 ObpfNativeInterface.C_POINTER
-            );
+        );
         private static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("__va_start");
 
         private final MethodHandle handle;
@@ -285,9 +424,9 @@ public class ObpfNativeInterface {
 
         /**
          * Variadic invoker factory for:
-         * {@snippet lang=c :
+         * {@snippet lang = c:
          * void __va_start(va_list *, ...)
-         * }
+         *}
          */
         public static __va_start makeInvoker(MemoryLayout... layouts) {
             FunctionDescriptor desc$ = BASE_DESC.appendArgumentLayouts(layouts);
@@ -324,46 +463,47 @@ public class ObpfNativeInterface {
                     traceDowncall("__va_start", x0, x1);
                 }
                 spreader.invokeExact(x0, x1);
-            } catch(IllegalArgumentException | ClassCastException ex$)  {
+            } catch (IllegalArgumentException | ClassCastException ex$) {
                 throw ex$; // rethrow IAE from passing wrong number/type of args
             } catch (Throwable ex$) {
-               throw new AssertionError("should not reach here", ex$);
+                throw new AssertionError("should not reach here", ex$);
             }
         }
     }
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned long long size_t
-     * }
+     *}
      */
     public static final OfLong size_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef long long ptrdiff_t
-     * }
+     *}
      */
     public static final OfLong ptrdiff_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef long long intptr_t
-     * }
+     *}
      */
     public static final OfLong intptr_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef _Bool __vcrt_bool
-     * }
+     *}
      */
     public static final OfBoolean __vcrt_bool = ObpfNativeInterface.C_BOOL;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned short wchar_t
-     * }
+     *}
      */
     public static final OfShort wchar_t = ObpfNativeInterface.C_SHORT;
 
     private static class __security_init_cookie {
-        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(    );
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid();
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("__security_init_cookie");
 
@@ -372,9 +512,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __security_init_cookie()
-     * }
+     *}
      */
     public static FunctionDescriptor __security_init_cookie$descriptor() {
         return __security_init_cookie.DESC;
@@ -382,9 +522,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __security_init_cookie()
-     * }
+     *}
      */
     public static MethodHandle __security_init_cookie$handle() {
         return __security_init_cookie.HANDLE;
@@ -392,18 +532,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __security_init_cookie()
-     * }
+     *}
      */
     public static MemorySegment __security_init_cookie$address() {
         return __security_init_cookie.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __security_init_cookie()
-     * }
+     *}
      */
     public static void __security_init_cookie() {
         var mh$ = __security_init_cookie.HANDLE;
@@ -413,13 +553,13 @@ public class ObpfNativeInterface {
             }
             mh$.invokeExact();
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class __security_check_cookie {
         public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
-            ObpfNativeInterface.C_LONG_LONG
+                ObpfNativeInterface.C_LONG_LONG
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("__security_check_cookie");
@@ -429,9 +569,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __security_check_cookie(uintptr_t _StackCookie)
-     * }
+     *}
      */
     public static FunctionDescriptor __security_check_cookie$descriptor() {
         return __security_check_cookie.DESC;
@@ -439,9 +579,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __security_check_cookie(uintptr_t _StackCookie)
-     * }
+     *}
      */
     public static MethodHandle __security_check_cookie$handle() {
         return __security_check_cookie.HANDLE;
@@ -449,18 +589,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __security_check_cookie(uintptr_t _StackCookie)
-     * }
+     *}
      */
     public static MemorySegment __security_check_cookie$address() {
         return __security_check_cookie.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __security_check_cookie(uintptr_t _StackCookie)
-     * }
+     *}
      */
     public static void __security_check_cookie(long _StackCookie) {
         var mh$ = __security_check_cookie.HANDLE;
@@ -470,13 +610,13 @@ public class ObpfNativeInterface {
             }
             mh$.invokeExact(_StackCookie);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class __report_gsfailure {
         public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
-            ObpfNativeInterface.C_LONG_LONG
+                ObpfNativeInterface.C_LONG_LONG
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("__report_gsfailure");
@@ -486,9 +626,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __report_gsfailure(uintptr_t _StackCookie)
-     * }
+     *}
      */
     public static FunctionDescriptor __report_gsfailure$descriptor() {
         return __report_gsfailure.DESC;
@@ -496,9 +636,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __report_gsfailure(uintptr_t _StackCookie)
-     * }
+     *}
      */
     public static MethodHandle __report_gsfailure$handle() {
         return __report_gsfailure.HANDLE;
@@ -506,18 +646,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __report_gsfailure(uintptr_t _StackCookie)
-     * }
+     *}
      */
     public static MemorySegment __report_gsfailure$address() {
         return __report_gsfailure.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void __report_gsfailure(uintptr_t _StackCookie)
-     * }
+     *}
      */
     public static void __report_gsfailure(long _StackCookie) {
         var mh$ = __report_gsfailure.HANDLE;
@@ -527,7 +667,7 @@ public class ObpfNativeInterface {
             }
             mh$.invokeExact(_StackCookie);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
@@ -538,9 +678,9 @@ public class ObpfNativeInterface {
 
     /**
      * Layout for variable:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * extern uintptr_t __security_cookie
-     * }
+     *}
      */
     public static OfLong __security_cookie$layout() {
         return __security_cookie$constants.LAYOUT;
@@ -548,9 +688,9 @@ public class ObpfNativeInterface {
 
     /**
      * Segment for variable:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * extern uintptr_t __security_cookie
-     * }
+     *}
      */
     public static MemorySegment __security_cookie$segment() {
         return __security_cookie$constants.SEGMENT;
@@ -558,9 +698,9 @@ public class ObpfNativeInterface {
 
     /**
      * Getter for variable:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * extern uintptr_t __security_cookie
-     * }
+     *}
      */
     public static long __security_cookie() {
         return __security_cookie$constants.SEGMENT.get(__security_cookie$constants.LAYOUT, 0L);
@@ -568,372 +708,418 @@ public class ObpfNativeInterface {
 
     /**
      * Setter for variable:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * extern uintptr_t __security_cookie
-     * }
+     *}
      */
     public static void __security_cookie(long varValue) {
         __security_cookie$constants.SEGMENT.set(__security_cookie$constants.LAYOUT, 0L, varValue);
     }
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef signed char int8_t
-     * }
+     *}
      */
     public static final OfByte int8_t = ObpfNativeInterface.C_CHAR;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef short int16_t
-     * }
+     *}
      */
     public static final OfShort int16_t = ObpfNativeInterface.C_SHORT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef int int32_t
-     * }
+     *}
      */
     public static final OfInt int32_t = ObpfNativeInterface.C_INT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef long long int64_t
-     * }
+     *}
      */
     public static final OfLong int64_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned char uint8_t
-     * }
+     *}
      */
     public static final OfByte uint8_t = ObpfNativeInterface.C_CHAR;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned short uint16_t
-     * }
+     *}
      */
     public static final OfShort uint16_t = ObpfNativeInterface.C_SHORT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned int uint32_t
-     * }
+     *}
      */
     public static final OfInt uint32_t = ObpfNativeInterface.C_INT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned long long uint64_t
-     * }
+     *}
      */
     public static final OfLong uint64_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef signed char int_least8_t
-     * }
+     *}
      */
     public static final OfByte int_least8_t = ObpfNativeInterface.C_CHAR;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef short int_least16_t
-     * }
+     *}
      */
     public static final OfShort int_least16_t = ObpfNativeInterface.C_SHORT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef int int_least32_t
-     * }
+     *}
      */
     public static final OfInt int_least32_t = ObpfNativeInterface.C_INT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef long long int_least64_t
-     * }
+     *}
      */
     public static final OfLong int_least64_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned char uint_least8_t
-     * }
+     *}
      */
     public static final OfByte uint_least8_t = ObpfNativeInterface.C_CHAR;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned short uint_least16_t
-     * }
+     *}
      */
     public static final OfShort uint_least16_t = ObpfNativeInterface.C_SHORT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned int uint_least32_t
-     * }
+     *}
      */
     public static final OfInt uint_least32_t = ObpfNativeInterface.C_INT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned long long uint_least64_t
-     * }
+     *}
      */
     public static final OfLong uint_least64_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef signed char int_fast8_t
-     * }
+     *}
      */
     public static final OfByte int_fast8_t = ObpfNativeInterface.C_CHAR;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef int int_fast16_t
-     * }
+     *}
      */
     public static final OfInt int_fast16_t = ObpfNativeInterface.C_INT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef int int_fast32_t
-     * }
+     *}
      */
     public static final OfInt int_fast32_t = ObpfNativeInterface.C_INT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef long long int_fast64_t
-     * }
+     *}
      */
     public static final OfLong int_fast64_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned char uint_fast8_t
-     * }
+     *}
      */
     public static final OfByte uint_fast8_t = ObpfNativeInterface.C_CHAR;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned int uint_fast16_t
-     * }
+     *}
      */
     public static final OfInt uint_fast16_t = ObpfNativeInterface.C_INT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned int uint_fast32_t
-     * }
+     *}
      */
     public static final OfInt uint_fast32_t = ObpfNativeInterface.C_INT;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned long long uint_fast64_t
-     * }
+     *}
      */
     public static final OfLong uint_fast64_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef long long intmax_t
-     * }
+     *}
      */
     public static final OfLong intmax_t = ObpfNativeInterface.C_LONG_LONG;
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * typedef unsigned long long uintmax_t
-     * }
+     *}
      */
     public static final OfLong uintmax_t = ObpfNativeInterface.C_LONG_LONG;
-    private static final int OBPF_KEY_LEFT = (int)0L;
+    private static final int OBPF_KEY_LEFT = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfKey.OBPF_KEY_LEFT = 0
-     * }
+     *}
      */
     public static int OBPF_KEY_LEFT() {
         return OBPF_KEY_LEFT;
     }
-    private static final int OBPF_KEY_RIGHT = (int)1L;
+
+    private static final int OBPF_KEY_RIGHT = (int) 1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfKey.OBPF_KEY_RIGHT = 1
-     * }
+     *}
      */
     public static int OBPF_KEY_RIGHT() {
         return OBPF_KEY_RIGHT;
     }
-    private static final int OBPF_KEY_DOWN = (int)2L;
+
+    private static final int OBPF_KEY_DOWN = (int) 2L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfKey.OBPF_KEY_DOWN = 2
-     * }
+     *}
      */
     public static int OBPF_KEY_DOWN() {
         return OBPF_KEY_DOWN;
     }
-    private static final int OBPF_KEY_DROP = (int)3L;
+
+    private static final int OBPF_KEY_DROP = (int) 3L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfKey.OBPF_KEY_DROP = 3
-     * }
+     *}
      */
     public static int OBPF_KEY_DROP() {
         return OBPF_KEY_DROP;
     }
-    private static final int OBPF_KEY_ROTATE_CW = (int)4L;
+
+    private static final int OBPF_KEY_ROTATE_CW = (int) 4L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfKey.OBPF_KEY_ROTATE_CW = 4
-     * }
+     *}
      */
     public static int OBPF_KEY_ROTATE_CW() {
         return OBPF_KEY_ROTATE_CW;
     }
-    private static final int OBPF_KEY_ROTATE_CCW = (int)5L;
+
+    private static final int OBPF_KEY_ROTATE_CCW = (int) 5L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfKey.OBPF_KEY_ROTATE_CCW = 5
-     * }
+     *}
      */
     public static int OBPF_KEY_ROTATE_CCW() {
         return OBPF_KEY_ROTATE_CCW;
     }
-    private static final int OBPF_KEY_HOLD = (int)6L;
+
+    private static final int OBPF_KEY_HOLD = (int) 6L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfKey.OBPF_KEY_HOLD = 6
-     * }
+     *}
      */
     public static int OBPF_KEY_HOLD() {
         return OBPF_KEY_HOLD;
     }
-    private static final int OBPF_PRESSED = (int)0L;
+
+    private static final int OBPF_PRESSED = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfEventType.OBPF_PRESSED = 0
-     * }
+     *}
      */
     public static int OBPF_PRESSED() {
         return OBPF_PRESSED;
     }
-    private static final int OBPF_RELEASED = (int)1L;
+
+    private static final int OBPF_RELEASED = (int) 1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum ObpfEventType.OBPF_RELEASED = 1
-     * }
+     *}
      */
     public static int OBPF_RELEASED() {
         return OBPF_RELEASED;
     }
-    private static final int OBPF_ROTATION_NORTH = (int)0L;
+
+    private static final int OBPF_ROTATION_NORTH = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_ROTATION_NORTH = 0
-     * }
+     *}
      */
     public static int OBPF_ROTATION_NORTH() {
         return OBPF_ROTATION_NORTH;
     }
-    private static final int OBPF_ROTATION_EAST = (int)1L;
+
+    private static final int OBPF_ROTATION_EAST = (int) 1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_ROTATION_EAST = 1
-     * }
+     *}
      */
     public static int OBPF_ROTATION_EAST() {
         return OBPF_ROTATION_EAST;
     }
-    private static final int OBPF_ROTATION_SOUTH = (int)2L;
+
+    private static final int OBPF_ROTATION_SOUTH = (int) 2L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_ROTATION_SOUTH = 2
-     * }
+     *}
      */
     public static int OBPF_ROTATION_SOUTH() {
         return OBPF_ROTATION_SOUTH;
     }
-    private static final int OBPF_ROTATION_WEST = (int)3L;
+
+    private static final int OBPF_ROTATION_WEST = (int) 3L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_ROTATION_WEST = 3
-     * }
+     *}
      */
     public static int OBPF_ROTATION_WEST() {
         return OBPF_ROTATION_WEST;
     }
-    private static final int OBPF_ROTATION_LAST_ROTATION = (int)3L;
+
+    private static final int OBPF_ROTATION_LAST_ROTATION = (int) 3L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_ROTATION_LAST_ROTATION = 3
-     * }
+     *}
      */
     public static int OBPF_ROTATION_LAST_ROTATION() {
         return OBPF_ROTATION_LAST_ROTATION;
     }
-    private static final int OBPF_TETROMINO_TYPE_EMPTY = (int)0L;
+
+    private static final int OBPF_TETROMINO_TYPE_EMPTY = (int) 0L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_EMPTY = 0
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_EMPTY() {
         return OBPF_TETROMINO_TYPE_EMPTY;
     }
-    private static final int OBPF_TETROMINO_TYPE_I = (int)1L;
+
+    private static final int OBPF_TETROMINO_TYPE_I = (int) 1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_I = 1
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_I() {
         return OBPF_TETROMINO_TYPE_I;
     }
-    private static final int OBPF_TETROMINO_TYPE_J = (int)2L;
+
+    private static final int OBPF_TETROMINO_TYPE_J = (int) 2L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_J = 2
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_J() {
         return OBPF_TETROMINO_TYPE_J;
     }
-    private static final int OBPF_TETROMINO_TYPE_L = (int)3L;
+
+    private static final int OBPF_TETROMINO_TYPE_L = (int) 3L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_L = 3
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_L() {
         return OBPF_TETROMINO_TYPE_L;
     }
-    private static final int OBPF_TETROMINO_TYPE_O = (int)4L;
+
+    private static final int OBPF_TETROMINO_TYPE_O = (int) 4L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_O = 4
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_O() {
         return OBPF_TETROMINO_TYPE_O;
     }
-    private static final int OBPF_TETROMINO_TYPE_S = (int)5L;
+
+    private static final int OBPF_TETROMINO_TYPE_S = (int) 5L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_S = 5
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_S() {
         return OBPF_TETROMINO_TYPE_S;
     }
-    private static final int OBPF_TETROMINO_TYPE_T = (int)6L;
+
+    private static final int OBPF_TETROMINO_TYPE_T = (int) 6L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_T = 6
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_T() {
         return OBPF_TETROMINO_TYPE_T;
     }
-    private static final int OBPF_TETROMINO_TYPE_Z = (int)7L;
+
+    private static final int OBPF_TETROMINO_TYPE_Z = (int) 7L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_Z = 7
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_Z() {
         return OBPF_TETROMINO_TYPE_Z;
     }
-    private static final int OBPF_TETROMINO_TYPE_LAST = (int)7L;
+
+    private static final int OBPF_TETROMINO_TYPE_LAST = (int) 7L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * enum <anonymous>.OBPF_TETROMINO_TYPE_LAST = 7
-     * }
+     *}
      */
     public static int OBPF_TETROMINO_TYPE_LAST() {
         return OBPF_TETROMINO_TYPE_LAST;
@@ -941,9 +1127,9 @@ public class ObpfNativeInterface {
 
     private static class obpf_tetromino_get_mino_positions {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfMinoPositions.layout(),
-            ObpfNativeInterface.C_INT,
-            ObpfNativeInterface.C_INT
+                ObpfMinoPositions.layout(),
+                ObpfNativeInterface.C_INT,
+                ObpfNativeInterface.C_INT
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetromino_get_mino_positions");
@@ -953,9 +1139,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfMinoPositions obpf_tetromino_get_mino_positions(ObpfTetrominoType type, ObpfRotation rotation)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetromino_get_mino_positions$descriptor() {
         return obpf_tetromino_get_mino_positions.DESC;
@@ -963,9 +1149,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfMinoPositions obpf_tetromino_get_mino_positions(ObpfTetrominoType type, ObpfRotation rotation)
-     * }
+     *}
      */
     public static MethodHandle obpf_tetromino_get_mino_positions$handle() {
         return obpf_tetromino_get_mino_positions.HANDLE;
@@ -973,18 +1159,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfMinoPositions obpf_tetromino_get_mino_positions(ObpfTetrominoType type, ObpfRotation rotation)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetromino_get_mino_positions$address() {
         return obpf_tetromino_get_mino_positions.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfMinoPositions obpf_tetromino_get_mino_positions(ObpfTetrominoType type, ObpfRotation rotation)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetromino_get_mino_positions(SegmentAllocator allocator, int type, int rotation) {
         var mh$ = obpf_tetromino_get_mino_positions.HANDLE;
@@ -992,22 +1178,22 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetromino_get_mino_positions", allocator, type, rotation);
             }
-            return (MemorySegment)mh$.invokeExact(allocator, type, rotation);
+            return (MemorySegment) mh$.invokeExact(allocator, type, rotation);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_key_state_create {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfKeyState.layout(),
-            ObpfNativeInterface.C_BOOL,
-            ObpfNativeInterface.C_BOOL,
-            ObpfNativeInterface.C_BOOL,
-            ObpfNativeInterface.C_BOOL,
-            ObpfNativeInterface.C_BOOL,
-            ObpfNativeInterface.C_BOOL,
-            ObpfNativeInterface.C_BOOL
+                ObpfKeyState.layout(),
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_BOOL
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_key_state_create");
@@ -1017,9 +1203,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfKeyState obpf_key_state_create(_Bool left, _Bool right, _Bool down, _Bool drop, _Bool rotate_clockwise, _Bool rotate_counter_clockwise, _Bool hold)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_key_state_create$descriptor() {
         return obpf_key_state_create.DESC;
@@ -1027,9 +1213,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfKeyState obpf_key_state_create(_Bool left, _Bool right, _Bool down, _Bool drop, _Bool rotate_clockwise, _Bool rotate_counter_clockwise, _Bool hold)
-     * }
+     *}
      */
     public static MethodHandle obpf_key_state_create$handle() {
         return obpf_key_state_create.HANDLE;
@@ -1037,18 +1223,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfKeyState obpf_key_state_create(_Bool left, _Bool right, _Bool down, _Bool drop, _Bool rotate_clockwise, _Bool rotate_counter_clockwise, _Bool hold)
-     * }
+     *}
      */
     public static MemorySegment obpf_key_state_create$address() {
         return obpf_key_state_create.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfKeyState obpf_key_state_create(_Bool left, _Bool right, _Bool down, _Bool drop, _Bool rotate_clockwise, _Bool rotate_counter_clockwise, _Bool hold)
-     * }
+     *}
      */
     public static MemorySegment obpf_key_state_create(SegmentAllocator allocator, boolean left, boolean right, boolean down, boolean drop, boolean rotate_clockwise, boolean rotate_counter_clockwise, boolean hold) {
         var mh$ = obpf_key_state_create.HANDLE;
@@ -1056,16 +1242,16 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_key_state_create", allocator, left, right, down, drop, rotate_clockwise, rotate_counter_clockwise, hold);
             }
-            return (MemorySegment)mh$.invokeExact(allocator, left, right, down, drop, rotate_clockwise, rotate_counter_clockwise, hold);
+            return (MemorySegment) mh$.invokeExact(allocator, left, right, down, drop, rotate_clockwise, rotate_counter_clockwise, hold);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_create_tetrion {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_POINTER,
-            ObpfNativeInterface.C_LONG_LONG
+                ObpfNativeInterface.C_POINTER,
+                ObpfNativeInterface.C_LONG_LONG
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_create_tetrion");
@@ -1075,9 +1261,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * struct ObpfTetrion *obpf_create_tetrion(uint64_t seed)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_create_tetrion$descriptor() {
         return obpf_create_tetrion.DESC;
@@ -1085,9 +1271,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * struct ObpfTetrion *obpf_create_tetrion(uint64_t seed)
-     * }
+     *}
      */
     public static MethodHandle obpf_create_tetrion$handle() {
         return obpf_create_tetrion.HANDLE;
@@ -1095,18 +1281,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * struct ObpfTetrion *obpf_create_tetrion(uint64_t seed)
-     * }
+     *}
      */
     public static MemorySegment obpf_create_tetrion$address() {
         return obpf_create_tetrion.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * struct ObpfTetrion *obpf_create_tetrion(uint64_t seed)
-     * }
+     *}
      */
     public static MemorySegment obpf_create_tetrion(long seed) {
         var mh$ = obpf_create_tetrion.HANDLE;
@@ -1114,16 +1300,191 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_create_tetrion", seed);
             }
-            return (MemorySegment)mh$.invokeExact(seed);
+            return (MemorySegment) mh$.invokeExact(seed);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class obpf_tetrion_set_action_handler {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
+                ObpfNativeInterface.C_POINTER,
+                ObpfNativeInterface.C_POINTER,
+                ObpfNativeInterface.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_set_action_handler");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang = c:
+     * void obpf_tetrion_set_action_handler(struct ObpfTetrion *tetrion, ObpfActionHandler handler, void *user_data)
+     *}
+     */
+    public static FunctionDescriptor obpf_tetrion_set_action_handler$descriptor() {
+        return obpf_tetrion_set_action_handler.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang = c:
+     * void obpf_tetrion_set_action_handler(struct ObpfTetrion *tetrion, ObpfActionHandler handler, void *user_data)
+     *}
+     */
+    public static MethodHandle obpf_tetrion_set_action_handler$handle() {
+        return obpf_tetrion_set_action_handler.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang = c:
+     * void obpf_tetrion_set_action_handler(struct ObpfTetrion *tetrion, ObpfActionHandler handler, void *user_data)
+     *}
+     */
+    public static MemorySegment obpf_tetrion_set_action_handler$address() {
+        return obpf_tetrion_set_action_handler.ADDR;
+    }
+
+    /**
+     * {@snippet lang = c:
+     * void obpf_tetrion_set_action_handler(struct ObpfTetrion *tetrion, ObpfActionHandler handler, void *user_data)
+     *}
+     */
+    public static void obpf_tetrion_set_action_handler(MemorySegment tetrion, MemorySegment handler, MemorySegment user_data) {
+        var mh$ = obpf_tetrion_set_action_handler.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("obpf_tetrion_set_action_handler", tetrion, handler, user_data);
+            }
+            mh$.invokeExact(tetrion, handler, user_data);
+        } catch (Throwable ex$) {
+            throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class obpf_tetrion_get_stats {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+                ObpfStats.layout(),
+                ObpfNativeInterface.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_get_stats");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang = c:
+     * ObpfStats obpf_tetrion_get_stats(const struct ObpfTetrion *tetrion)
+     *}
+     */
+    public static FunctionDescriptor obpf_tetrion_get_stats$descriptor() {
+        return obpf_tetrion_get_stats.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang = c:
+     * ObpfStats obpf_tetrion_get_stats(const struct ObpfTetrion *tetrion)
+     *}
+     */
+    public static MethodHandle obpf_tetrion_get_stats$handle() {
+        return obpf_tetrion_get_stats.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang = c:
+     * ObpfStats obpf_tetrion_get_stats(const struct ObpfTetrion *tetrion)
+     *}
+     */
+    public static MemorySegment obpf_tetrion_get_stats$address() {
+        return obpf_tetrion_get_stats.ADDR;
+    }
+
+    /**
+     * {@snippet lang = c:
+     * ObpfStats obpf_tetrion_get_stats(const struct ObpfTetrion *tetrion)
+     *}
+     */
+    public static MemorySegment obpf_tetrion_get_stats(SegmentAllocator allocator, MemorySegment tetrion) {
+        var mh$ = obpf_tetrion_get_stats.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("obpf_tetrion_get_stats", allocator, tetrion);
+            }
+            return (MemorySegment) mh$.invokeExact(allocator, tetrion);
+        } catch (Throwable ex$) {
+            throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class obpf_tetrion_is_game_over {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_is_game_over");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang = c:
+     * _Bool obpf_tetrion_is_game_over(const struct ObpfTetrion *tetrion)
+     *}
+     */
+    public static FunctionDescriptor obpf_tetrion_is_game_over$descriptor() {
+        return obpf_tetrion_is_game_over.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang = c:
+     * _Bool obpf_tetrion_is_game_over(const struct ObpfTetrion *tetrion)
+     *}
+     */
+    public static MethodHandle obpf_tetrion_is_game_over$handle() {
+        return obpf_tetrion_is_game_over.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang = c:
+     * _Bool obpf_tetrion_is_game_over(const struct ObpfTetrion *tetrion)
+     *}
+     */
+    public static MemorySegment obpf_tetrion_is_game_over$address() {
+        return obpf_tetrion_is_game_over.ADDR;
+    }
+
+    /**
+     * {@snippet lang = c:
+     * _Bool obpf_tetrion_is_game_over(const struct ObpfTetrion *tetrion)
+     *}
+     */
+    public static boolean obpf_tetrion_is_game_over(MemorySegment tetrion) {
+        var mh$ = obpf_tetrion_is_game_over.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("obpf_tetrion_is_game_over", tetrion);
+            }
+            return (boolean) mh$.invokeExact(tetrion);
+        } catch (Throwable ex$) {
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_get_line_clear_delay_state {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfLineClearDelayState.layout(),
-            ObpfNativeInterface.C_POINTER
+                ObpfLineClearDelayState.layout(),
+                ObpfNativeInterface.C_POINTER
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_get_line_clear_delay_state");
@@ -1133,9 +1494,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfLineClearDelayState obpf_tetrion_get_line_clear_delay_state(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_get_line_clear_delay_state$descriptor() {
         return obpf_tetrion_get_line_clear_delay_state.DESC;
@@ -1143,9 +1504,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfLineClearDelayState obpf_tetrion_get_line_clear_delay_state(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_get_line_clear_delay_state$handle() {
         return obpf_tetrion_get_line_clear_delay_state.HANDLE;
@@ -1153,18 +1514,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfLineClearDelayState obpf_tetrion_get_line_clear_delay_state(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_get_line_clear_delay_state$address() {
         return obpf_tetrion_get_line_clear_delay_state.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfLineClearDelayState obpf_tetrion_get_line_clear_delay_state(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_get_line_clear_delay_state(SegmentAllocator allocator, MemorySegment tetrion) {
         var mh$ = obpf_tetrion_get_line_clear_delay_state.HANDLE;
@@ -1172,17 +1533,17 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetrion_get_line_clear_delay_state", allocator, tetrion);
             }
-            return (MemorySegment)mh$.invokeExact(allocator, tetrion);
+            return (MemorySegment) mh$.invokeExact(allocator, tetrion);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_try_get_active_tetromino {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_BOOL,
-            ObpfNativeInterface.C_POINTER,
-            ObpfNativeInterface.C_POINTER
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_POINTER,
+                ObpfNativeInterface.C_POINTER
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_try_get_active_tetromino");
@@ -1192,9 +1553,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * _Bool obpf_tetrion_try_get_active_tetromino(const struct ObpfTetrion *tetrion, struct ObpfTetromino *out_tetromino)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_try_get_active_tetromino$descriptor() {
         return obpf_tetrion_try_get_active_tetromino.DESC;
@@ -1202,9 +1563,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * _Bool obpf_tetrion_try_get_active_tetromino(const struct ObpfTetrion *tetrion, struct ObpfTetromino *out_tetromino)
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_try_get_active_tetromino$handle() {
         return obpf_tetrion_try_get_active_tetromino.HANDLE;
@@ -1212,18 +1573,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * _Bool obpf_tetrion_try_get_active_tetromino(const struct ObpfTetrion *tetrion, struct ObpfTetromino *out_tetromino)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_try_get_active_tetromino$address() {
         return obpf_tetrion_try_get_active_tetromino.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * _Bool obpf_tetrion_try_get_active_tetromino(const struct ObpfTetrion *tetrion, struct ObpfTetromino *out_tetromino)
-     * }
+     *}
      */
     public static boolean obpf_tetrion_try_get_active_tetromino(MemorySegment tetrion, MemorySegment out_tetromino) {
         var mh$ = obpf_tetrion_try_get_active_tetromino.HANDLE;
@@ -1231,17 +1592,78 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetrion_try_get_active_tetromino", tetrion, out_tetromino);
             }
-            return (boolean)mh$.invokeExact(tetrion, out_tetromino);
+            return (boolean) mh$.invokeExact(tetrion, out_tetromino);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class obpf_tetrion_try_get_active_tetromino_transform {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_POINTER,
+                ObpfNativeInterface.C_POINTER,
+                ObpfNativeInterface.C_POINTER,
+                ObpfNativeInterface.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_try_get_active_tetromino_transform");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang = c:
+     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2 *out_position)
+     *}
+     */
+    public static FunctionDescriptor obpf_tetrion_try_get_active_tetromino_transform$descriptor() {
+        return obpf_tetrion_try_get_active_tetromino_transform.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang = c:
+     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2 *out_position)
+     *}
+     */
+    public static MethodHandle obpf_tetrion_try_get_active_tetromino_transform$handle() {
+        return obpf_tetrion_try_get_active_tetromino_transform.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang = c:
+     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2 *out_position)
+     *}
+     */
+    public static MemorySegment obpf_tetrion_try_get_active_tetromino_transform$address() {
+        return obpf_tetrion_try_get_active_tetromino_transform.ADDR;
+    }
+
+    /**
+     * {@snippet lang = c:
+     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2 *out_position)
+     *}
+     */
+    public static boolean obpf_tetrion_try_get_active_tetromino_transform(MemorySegment tetrion, MemorySegment out_type, MemorySegment out_rotation, MemorySegment out_position) {
+        var mh$ = obpf_tetrion_try_get_active_tetromino_transform.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("obpf_tetrion_try_get_active_tetromino_transform", tetrion, out_type, out_rotation, out_position);
+            }
+            return (boolean) mh$.invokeExact(tetrion, out_type, out_rotation, out_position);
+        } catch (Throwable ex$) {
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_try_get_ghost_tetromino {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_BOOL,
-            ObpfNativeInterface.C_POINTER,
-            ObpfNativeInterface.C_POINTER
+                ObpfNativeInterface.C_BOOL,
+                ObpfNativeInterface.C_POINTER,
+                ObpfNativeInterface.C_POINTER
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_try_get_ghost_tetromino");
@@ -1251,9 +1673,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * _Bool obpf_tetrion_try_get_ghost_tetromino(const struct ObpfTetrion *tetrion, struct ObpfTetromino *out_tetromino)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_try_get_ghost_tetromino$descriptor() {
         return obpf_tetrion_try_get_ghost_tetromino.DESC;
@@ -1261,9 +1683,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * _Bool obpf_tetrion_try_get_ghost_tetromino(const struct ObpfTetrion *tetrion, struct ObpfTetromino *out_tetromino)
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_try_get_ghost_tetromino$handle() {
         return obpf_tetrion_try_get_ghost_tetromino.HANDLE;
@@ -1271,18 +1693,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * _Bool obpf_tetrion_try_get_ghost_tetromino(const struct ObpfTetrion *tetrion, struct ObpfTetromino *out_tetromino)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_try_get_ghost_tetromino$address() {
         return obpf_tetrion_try_get_ghost_tetromino.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * _Bool obpf_tetrion_try_get_ghost_tetromino(const struct ObpfTetrion *tetrion, struct ObpfTetromino *out_tetromino)
-     * }
+     *}
      */
     public static boolean obpf_tetrion_try_get_ghost_tetromino(MemorySegment tetrion, MemorySegment out_tetromino) {
         var mh$ = obpf_tetrion_try_get_ghost_tetromino.HANDLE;
@@ -1290,16 +1712,75 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetrion_try_get_ghost_tetromino", tetrion, out_tetromino);
             }
-            return (boolean)mh$.invokeExact(tetrion, out_tetromino);
+            return (boolean) mh$.invokeExact(tetrion, out_tetromino);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class obpf_tetrion_matrix_get {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+                ObpfNativeInterface.C_INT,
+                ObpfNativeInterface.C_POINTER,
+                ObpfVec2.layout()
+        );
+
+        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_matrix_get");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang = c:
+     * ObpfTetrominoType obpf_tetrion_matrix_get(const struct ObpfTetrion *tetrion, ObpfVec2 position)
+     *}
+     */
+    public static FunctionDescriptor obpf_tetrion_matrix_get$descriptor() {
+        return obpf_tetrion_matrix_get.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang = c:
+     * ObpfTetrominoType obpf_tetrion_matrix_get(const struct ObpfTetrion *tetrion, ObpfVec2 position)
+     *}
+     */
+    public static MethodHandle obpf_tetrion_matrix_get$handle() {
+        return obpf_tetrion_matrix_get.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang = c:
+     * ObpfTetrominoType obpf_tetrion_matrix_get(const struct ObpfTetrion *tetrion, ObpfVec2 position)
+     *}
+     */
+    public static MemorySegment obpf_tetrion_matrix_get$address() {
+        return obpf_tetrion_matrix_get.ADDR;
+    }
+
+    /**
+     * {@snippet lang = c:
+     * ObpfTetrominoType obpf_tetrion_matrix_get(const struct ObpfTetrion *tetrion, ObpfVec2 position)
+     *}
+     */
+    public static int obpf_tetrion_matrix_get(MemorySegment tetrion, MemorySegment position) {
+        var mh$ = obpf_tetrion_matrix_get.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("obpf_tetrion_matrix_get", tetrion, position);
+            }
+            return (int) mh$.invokeExact(tetrion, position);
+        } catch (Throwable ex$) {
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_get_preview_pieces {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfPreviewPieces.layout(),
-            ObpfNativeInterface.C_POINTER
+                ObpfPreviewPieces.layout(),
+                ObpfNativeInterface.C_POINTER
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_get_preview_pieces");
@@ -1309,9 +1790,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfPreviewPieces obpf_tetrion_get_preview_pieces(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_get_preview_pieces$descriptor() {
         return obpf_tetrion_get_preview_pieces.DESC;
@@ -1319,9 +1800,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfPreviewPieces obpf_tetrion_get_preview_pieces(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_get_preview_pieces$handle() {
         return obpf_tetrion_get_preview_pieces.HANDLE;
@@ -1329,18 +1810,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfPreviewPieces obpf_tetrion_get_preview_pieces(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_get_preview_pieces$address() {
         return obpf_tetrion_get_preview_pieces.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfPreviewPieces obpf_tetrion_get_preview_pieces(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_get_preview_pieces(SegmentAllocator allocator, MemorySegment tetrion) {
         var mh$ = obpf_tetrion_get_preview_pieces.HANDLE;
@@ -1348,16 +1829,16 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetrion_get_preview_pieces", allocator, tetrion);
             }
-            return (MemorySegment)mh$.invokeExact(allocator, tetrion);
+            return (MemorySegment) mh$.invokeExact(allocator, tetrion);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_get_hold_piece {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_INT,
-            ObpfNativeInterface.C_POINTER
+                ObpfNativeInterface.C_INT,
+                ObpfNativeInterface.C_POINTER
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_get_hold_piece");
@@ -1367,9 +1848,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfTetrominoType obpf_tetrion_get_hold_piece(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_get_hold_piece$descriptor() {
         return obpf_tetrion_get_hold_piece.DESC;
@@ -1377,9 +1858,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfTetrominoType obpf_tetrion_get_hold_piece(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_get_hold_piece$handle() {
         return obpf_tetrion_get_hold_piece.HANDLE;
@@ -1387,18 +1868,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfTetrominoType obpf_tetrion_get_hold_piece(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_get_hold_piece$address() {
         return obpf_tetrion_get_hold_piece.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * ObpfTetrominoType obpf_tetrion_get_hold_piece(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static int obpf_tetrion_get_hold_piece(MemorySegment tetrion) {
         var mh$ = obpf_tetrion_get_hold_piece.HANDLE;
@@ -1406,16 +1887,16 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetrion_get_hold_piece", tetrion);
             }
-            return (int)mh$.invokeExact(tetrion);
+            return (int) mh$.invokeExact(tetrion);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_get_next_frame {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_LONG_LONG,
-            ObpfNativeInterface.C_POINTER
+                ObpfNativeInterface.C_LONG_LONG,
+                ObpfNativeInterface.C_POINTER
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_get_next_frame");
@@ -1425,9 +1906,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint64_t obpf_tetrion_get_next_frame(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_get_next_frame$descriptor() {
         return obpf_tetrion_get_next_frame.DESC;
@@ -1435,9 +1916,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint64_t obpf_tetrion_get_next_frame(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_get_next_frame$handle() {
         return obpf_tetrion_get_next_frame.HANDLE;
@@ -1445,18 +1926,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint64_t obpf_tetrion_get_next_frame(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_get_next_frame$address() {
         return obpf_tetrion_get_next_frame.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint64_t obpf_tetrion_get_next_frame(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static long obpf_tetrion_get_next_frame(MemorySegment tetrion) {
         var mh$ = obpf_tetrion_get_next_frame.HANDLE;
@@ -1464,16 +1945,16 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetrion_get_next_frame", tetrion);
             }
-            return (long)mh$.invokeExact(tetrion);
+            return (long) mh$.invokeExact(tetrion);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_simulate_next_frame {
         public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
-            ObpfNativeInterface.C_POINTER,
-            ObpfKeyState.layout()
+                ObpfNativeInterface.C_POINTER,
+                ObpfKeyState.layout()
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_simulate_next_frame");
@@ -1483,9 +1964,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void obpf_tetrion_simulate_next_frame(struct ObpfTetrion *tetrion, ObpfKeyState key_state)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_simulate_next_frame$descriptor() {
         return obpf_tetrion_simulate_next_frame.DESC;
@@ -1493,9 +1974,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void obpf_tetrion_simulate_next_frame(struct ObpfTetrion *tetrion, ObpfKeyState key_state)
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_simulate_next_frame$handle() {
         return obpf_tetrion_simulate_next_frame.HANDLE;
@@ -1503,18 +1984,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void obpf_tetrion_simulate_next_frame(struct ObpfTetrion *tetrion, ObpfKeyState key_state)
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_simulate_next_frame$address() {
         return obpf_tetrion_simulate_next_frame.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void obpf_tetrion_simulate_next_frame(struct ObpfTetrion *tetrion, ObpfKeyState key_state)
-     * }
+     *}
      */
     public static void obpf_tetrion_simulate_next_frame(MemorySegment tetrion, MemorySegment key_state) {
         var mh$ = obpf_tetrion_simulate_next_frame.HANDLE;
@@ -1524,13 +2005,13 @@ public class ObpfNativeInterface {
             }
             mh$.invokeExact(tetrion, key_state);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_destroy_tetrion {
         public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
-            ObpfNativeInterface.C_POINTER
+                ObpfNativeInterface.C_POINTER
         );
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_destroy_tetrion");
@@ -1540,9 +2021,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void obpf_destroy_tetrion(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_destroy_tetrion$descriptor() {
         return obpf_destroy_tetrion.DESC;
@@ -1550,9 +2031,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void obpf_destroy_tetrion(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MethodHandle obpf_destroy_tetrion$handle() {
         return obpf_destroy_tetrion.HANDLE;
@@ -1560,18 +2041,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void obpf_destroy_tetrion(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static MemorySegment obpf_destroy_tetrion$address() {
         return obpf_destroy_tetrion.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * void obpf_destroy_tetrion(const struct ObpfTetrion *tetrion)
-     * }
+     *}
      */
     public static void obpf_destroy_tetrion(MemorySegment tetrion) {
         var mh$ = obpf_destroy_tetrion.HANDLE;
@@ -1581,71 +2062,13 @@ public class ObpfNativeInterface {
             }
             mh$.invokeExact(tetrion);
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
-        }
-    }
-
-    private static class obpf_tetrion_matrix {
-        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_POINTER,
-            ObpfNativeInterface.C_POINTER
-        );
-
-        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_matrix");
-
-        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
-    }
-
-    /**
-     * Function descriptor for:
-     * {@snippet lang=c :
-     * const struct ObpfMatrix *obpf_tetrion_matrix(const struct ObpfTetrion *tetrion)
-     * }
-     */
-    public static FunctionDescriptor obpf_tetrion_matrix$descriptor() {
-        return obpf_tetrion_matrix.DESC;
-    }
-
-    /**
-     * Downcall method handle for:
-     * {@snippet lang=c :
-     * const struct ObpfMatrix *obpf_tetrion_matrix(const struct ObpfTetrion *tetrion)
-     * }
-     */
-    public static MethodHandle obpf_tetrion_matrix$handle() {
-        return obpf_tetrion_matrix.HANDLE;
-    }
-
-    /**
-     * Address for:
-     * {@snippet lang=c :
-     * const struct ObpfMatrix *obpf_tetrion_matrix(const struct ObpfTetrion *tetrion)
-     * }
-     */
-    public static MemorySegment obpf_tetrion_matrix$address() {
-        return obpf_tetrion_matrix.ADDR;
-    }
-
-    /**
-     * {@snippet lang=c :
-     * const struct ObpfMatrix *obpf_tetrion_matrix(const struct ObpfTetrion *tetrion)
-     * }
-     */
-    public static MemorySegment obpf_tetrion_matrix(MemorySegment tetrion) {
-        var mh$ = obpf_tetrion_matrix.HANDLE;
-        try {
-            if (TRACE_DOWNCALLS) {
-                traceDowncall("obpf_tetrion_matrix", tetrion);
-            }
-            return (MemorySegment)mh$.invokeExact(tetrion);
-        } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_width {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_CHAR    );
+                ObpfNativeInterface.C_CHAR);
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_width");
 
@@ -1654,9 +2077,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint8_t obpf_tetrion_width()
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_width$descriptor() {
         return obpf_tetrion_width.DESC;
@@ -1664,9 +2087,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint8_t obpf_tetrion_width()
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_width$handle() {
         return obpf_tetrion_width.HANDLE;
@@ -1674,18 +2097,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint8_t obpf_tetrion_width()
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_width$address() {
         return obpf_tetrion_width.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint8_t obpf_tetrion_width()
-     * }
+     *}
      */
     public static byte obpf_tetrion_width() {
         var mh$ = obpf_tetrion_width.HANDLE;
@@ -1693,15 +2116,15 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetrion_width");
             }
-            return (byte)mh$.invokeExact();
+            return (byte) mh$.invokeExact();
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
     private static class obpf_tetrion_height {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_CHAR    );
+                ObpfNativeInterface.C_CHAR);
 
         public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_height");
 
@@ -1710,9 +2133,9 @@ public class ObpfNativeInterface {
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint8_t obpf_tetrion_height()
-     * }
+     *}
      */
     public static FunctionDescriptor obpf_tetrion_height$descriptor() {
         return obpf_tetrion_height.DESC;
@@ -1720,9 +2143,9 @@ public class ObpfNativeInterface {
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint8_t obpf_tetrion_height()
-     * }
+     *}
      */
     public static MethodHandle obpf_tetrion_height$handle() {
         return obpf_tetrion_height.HANDLE;
@@ -1730,18 +2153,18 @@ public class ObpfNativeInterface {
 
     /**
      * Address for:
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint8_t obpf_tetrion_height()
-     * }
+     *}
      */
     public static MemorySegment obpf_tetrion_height$address() {
         return obpf_tetrion_height.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * uint8_t obpf_tetrion_height()
-     * }
+     *}
      */
     public static byte obpf_tetrion_height() {
         var mh$ = obpf_tetrion_height.HANDLE;
@@ -1749,507 +2172,602 @@ public class ObpfNativeInterface {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("obpf_tetrion_height");
             }
-            return (byte)mh$.invokeExact();
+            return (byte) mh$.invokeExact();
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 
-    private static class obpf_matrix_get {
+    private static class obpf_tetrion_num_invisible_lines {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
-            ObpfNativeInterface.C_INT,
-            ObpfNativeInterface.C_POINTER,
-            ObpfVec2.layout()
-        );
+                ObpfNativeInterface.C_CHAR);
 
-        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_matrix_get");
+        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_tetrion_num_invisible_lines");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
 
     /**
      * Function descriptor for:
-     * {@snippet lang=c :
-     * ObpfTetrominoType obpf_matrix_get(const struct ObpfMatrix *matrix, ObpfVec2 position)
-     * }
+     * {@snippet lang = c:
+     * uint8_t obpf_tetrion_num_invisible_lines()
+     *}
      */
-    public static FunctionDescriptor obpf_matrix_get$descriptor() {
-        return obpf_matrix_get.DESC;
+    public static FunctionDescriptor obpf_tetrion_num_invisible_lines$descriptor() {
+        return obpf_tetrion_num_invisible_lines.DESC;
     }
 
     /**
      * Downcall method handle for:
-     * {@snippet lang=c :
-     * ObpfTetrominoType obpf_matrix_get(const struct ObpfMatrix *matrix, ObpfVec2 position)
-     * }
+     * {@snippet lang = c:
+     * uint8_t obpf_tetrion_num_invisible_lines()
+     *}
      */
-    public static MethodHandle obpf_matrix_get$handle() {
-        return obpf_matrix_get.HANDLE;
+    public static MethodHandle obpf_tetrion_num_invisible_lines$handle() {
+        return obpf_tetrion_num_invisible_lines.HANDLE;
     }
 
     /**
      * Address for:
-     * {@snippet lang=c :
-     * ObpfTetrominoType obpf_matrix_get(const struct ObpfMatrix *matrix, ObpfVec2 position)
-     * }
+     * {@snippet lang = c:
+     * uint8_t obpf_tetrion_num_invisible_lines()
+     *}
      */
-    public static MemorySegment obpf_matrix_get$address() {
-        return obpf_matrix_get.ADDR;
+    public static MemorySegment obpf_tetrion_num_invisible_lines$address() {
+        return obpf_tetrion_num_invisible_lines.ADDR;
     }
 
     /**
-     * {@snippet lang=c :
-     * ObpfTetrominoType obpf_matrix_get(const struct ObpfMatrix *matrix, ObpfVec2 position)
-     * }
+     * {@snippet lang = c:
+     * uint8_t obpf_tetrion_num_invisible_lines()
+     *}
      */
-    public static int obpf_matrix_get(MemorySegment matrix, MemorySegment position) {
-        var mh$ = obpf_matrix_get.HANDLE;
+    public static byte obpf_tetrion_num_invisible_lines() {
+        var mh$ = obpf_tetrion_num_invisible_lines.HANDLE;
         try {
             if (TRACE_DOWNCALLS) {
-                traceDowncall("obpf_matrix_get", matrix, position);
+                traceDowncall("obpf_tetrion_num_invisible_lines");
             }
-            return (int)mh$.invokeExact(matrix, position);
+            return (byte) mh$.invokeExact();
         } catch (Throwable ex$) {
-           throw new AssertionError("should not reach here", ex$);
+            throw new AssertionError("should not reach here", ex$);
         }
     }
-    private static final int _VCRUNTIME_DISABLED_WARNINGS = (int)4514L;
+
+    private static final int _VCRUNTIME_DISABLED_WARNINGS = (int) 4514L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define _VCRUNTIME_DISABLED_WARNINGS 4514
-     * }
+     *}
      */
     public static int _VCRUNTIME_DISABLED_WARNINGS() {
         return _VCRUNTIME_DISABLED_WARNINGS;
     }
+
     private static final MemorySegment NULL = MemorySegment.ofAddress(0L);
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define NULL (void*) 0
-     * }
+     *}
      */
     public static MemorySegment NULL() {
         return NULL;
     }
-    private static final int INT8_MIN = (int)-128L;
+
+    private static final int INT8_MIN = (int) -128L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT8_MIN -128
-     * }
+     *}
      */
     public static int INT8_MIN() {
         return INT8_MIN;
     }
-    private static final int INT16_MIN = (int)-32768L;
+
+    private static final int INT16_MIN = (int) -32768L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT16_MIN -32768
-     * }
+     *}
      */
     public static int INT16_MIN() {
         return INT16_MIN;
     }
-    private static final int INT32_MIN = (int)-2147483648L;
+
+    private static final int INT32_MIN = (int) -2147483648L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT32_MIN -2147483648
-     * }
+     *}
      */
     public static int INT32_MIN() {
         return INT32_MIN;
     }
+
     private static final long INT64_MIN = -9223372036854775808L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT64_MIN -9223372036854775808
-     * }
+     *}
      */
     public static long INT64_MIN() {
         return INT64_MIN;
     }
-    private static final byte INT8_MAX = (byte)127L;
+
+    private static final byte INT8_MAX = (byte) 127L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT8_MAX 127
-     * }
+     *}
      */
     public static byte INT8_MAX() {
         return INT8_MAX;
     }
-    private static final short INT16_MAX = (short)32767L;
+
+    private static final short INT16_MAX = (short) 32767L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT16_MAX 32767
-     * }
+     *}
      */
     public static short INT16_MAX() {
         return INT16_MAX;
     }
-    private static final int INT32_MAX = (int)2147483647L;
+
+    private static final int INT32_MAX = (int) 2147483647L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT32_MAX 2147483647
-     * }
+     *}
      */
     public static int INT32_MAX() {
         return INT32_MAX;
     }
+
     private static final long INT64_MAX = 9223372036854775807L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT64_MAX 9223372036854775807
-     * }
+     *}
      */
     public static long INT64_MAX() {
         return INT64_MAX;
     }
-    private static final byte UINT8_MAX = (byte)255L;
+
+    private static final byte UINT8_MAX = (byte) 255L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT8_MAX 255
-     * }
+     *}
      */
     public static byte UINT8_MAX() {
         return UINT8_MAX;
     }
-    private static final short UINT16_MAX = (short)65535L;
+
+    private static final short UINT16_MAX = (short) 65535L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT16_MAX 65535
-     * }
+     *}
      */
     public static short UINT16_MAX() {
         return UINT16_MAX;
     }
-    private static final int UINT32_MAX = (int)4294967295L;
+
+    private static final int UINT32_MAX = (int) 4294967295L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT32_MAX 4294967295
-     * }
+     *}
      */
     public static int UINT32_MAX() {
         return UINT32_MAX;
     }
+
     private static final long UINT64_MAX = -1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT64_MAX -1
-     * }
+     *}
      */
     public static long UINT64_MAX() {
         return UINT64_MAX;
     }
-    private static final int INT_LEAST8_MIN = (int)-128L;
+
+    private static final int INT_LEAST8_MIN = (int) -128L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_LEAST8_MIN -128
-     * }
+     *}
      */
     public static int INT_LEAST8_MIN() {
         return INT_LEAST8_MIN;
     }
-    private static final int INT_LEAST16_MIN = (int)-32768L;
+
+    private static final int INT_LEAST16_MIN = (int) -32768L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_LEAST16_MIN -32768
-     * }
+     *}
      */
     public static int INT_LEAST16_MIN() {
         return INT_LEAST16_MIN;
     }
-    private static final int INT_LEAST32_MIN = (int)-2147483648L;
+
+    private static final int INT_LEAST32_MIN = (int) -2147483648L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_LEAST32_MIN -2147483648
-     * }
+     *}
      */
     public static int INT_LEAST32_MIN() {
         return INT_LEAST32_MIN;
     }
+
     private static final long INT_LEAST64_MIN = -9223372036854775808L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_LEAST64_MIN -9223372036854775808
-     * }
+     *}
      */
     public static long INT_LEAST64_MIN() {
         return INT_LEAST64_MIN;
     }
-    private static final byte INT_LEAST8_MAX = (byte)127L;
+
+    private static final byte INT_LEAST8_MAX = (byte) 127L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_LEAST8_MAX 127
-     * }
+     *}
      */
     public static byte INT_LEAST8_MAX() {
         return INT_LEAST8_MAX;
     }
-    private static final short INT_LEAST16_MAX = (short)32767L;
+
+    private static final short INT_LEAST16_MAX = (short) 32767L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_LEAST16_MAX 32767
-     * }
+     *}
      */
     public static short INT_LEAST16_MAX() {
         return INT_LEAST16_MAX;
     }
-    private static final int INT_LEAST32_MAX = (int)2147483647L;
+
+    private static final int INT_LEAST32_MAX = (int) 2147483647L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_LEAST32_MAX 2147483647
-     * }
+     *}
      */
     public static int INT_LEAST32_MAX() {
         return INT_LEAST32_MAX;
     }
+
     private static final long INT_LEAST64_MAX = 9223372036854775807L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_LEAST64_MAX 9223372036854775807
-     * }
+     *}
      */
     public static long INT_LEAST64_MAX() {
         return INT_LEAST64_MAX;
     }
-    private static final byte UINT_LEAST8_MAX = (byte)255L;
+
+    private static final byte UINT_LEAST8_MAX = (byte) 255L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT_LEAST8_MAX 255
-     * }
+     *}
      */
     public static byte UINT_LEAST8_MAX() {
         return UINT_LEAST8_MAX;
     }
-    private static final short UINT_LEAST16_MAX = (short)65535L;
+
+    private static final short UINT_LEAST16_MAX = (short) 65535L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT_LEAST16_MAX 65535
-     * }
+     *}
      */
     public static short UINT_LEAST16_MAX() {
         return UINT_LEAST16_MAX;
     }
-    private static final int UINT_LEAST32_MAX = (int)4294967295L;
+
+    private static final int UINT_LEAST32_MAX = (int) 4294967295L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT_LEAST32_MAX 4294967295
-     * }
+     *}
      */
     public static int UINT_LEAST32_MAX() {
         return UINT_LEAST32_MAX;
     }
+
     private static final long UINT_LEAST64_MAX = -1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT_LEAST64_MAX -1
-     * }
+     *}
      */
     public static long UINT_LEAST64_MAX() {
         return UINT_LEAST64_MAX;
     }
-    private static final int INT_FAST8_MIN = (int)-128L;
+
+    private static final int INT_FAST8_MIN = (int) -128L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_FAST8_MIN -128
-     * }
+     *}
      */
     public static int INT_FAST8_MIN() {
         return INT_FAST8_MIN;
     }
-    private static final int INT_FAST16_MIN = (int)-2147483648L;
+
+    private static final int INT_FAST16_MIN = (int) -2147483648L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_FAST16_MIN -2147483648
-     * }
+     *}
      */
     public static int INT_FAST16_MIN() {
         return INT_FAST16_MIN;
     }
-    private static final int INT_FAST32_MIN = (int)-2147483648L;
+
+    private static final int INT_FAST32_MIN = (int) -2147483648L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_FAST32_MIN -2147483648
-     * }
+     *}
      */
     public static int INT_FAST32_MIN() {
         return INT_FAST32_MIN;
     }
+
     private static final long INT_FAST64_MIN = -9223372036854775808L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_FAST64_MIN -9223372036854775808
-     * }
+     *}
      */
     public static long INT_FAST64_MIN() {
         return INT_FAST64_MIN;
     }
-    private static final byte INT_FAST8_MAX = (byte)127L;
+
+    private static final byte INT_FAST8_MAX = (byte) 127L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_FAST8_MAX 127
-     * }
+     *}
      */
     public static byte INT_FAST8_MAX() {
         return INT_FAST8_MAX;
     }
-    private static final int INT_FAST16_MAX = (int)2147483647L;
+
+    private static final int INT_FAST16_MAX = (int) 2147483647L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_FAST16_MAX 2147483647
-     * }
+     *}
      */
     public static int INT_FAST16_MAX() {
         return INT_FAST16_MAX;
     }
-    private static final int INT_FAST32_MAX = (int)2147483647L;
+
+    private static final int INT_FAST32_MAX = (int) 2147483647L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_FAST32_MAX 2147483647
-     * }
+     *}
      */
     public static int INT_FAST32_MAX() {
         return INT_FAST32_MAX;
     }
+
     private static final long INT_FAST64_MAX = 9223372036854775807L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INT_FAST64_MAX 9223372036854775807
-     * }
+     *}
      */
     public static long INT_FAST64_MAX() {
         return INT_FAST64_MAX;
     }
-    private static final byte UINT_FAST8_MAX = (byte)255L;
+
+    private static final byte UINT_FAST8_MAX = (byte) 255L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT_FAST8_MAX 255
-     * }
+     *}
      */
     public static byte UINT_FAST8_MAX() {
         return UINT_FAST8_MAX;
     }
-    private static final int UINT_FAST16_MAX = (int)4294967295L;
+
+    private static final int UINT_FAST16_MAX = (int) 4294967295L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT_FAST16_MAX 4294967295
-     * }
+     *}
      */
     public static int UINT_FAST16_MAX() {
         return UINT_FAST16_MAX;
     }
-    private static final int UINT_FAST32_MAX = (int)4294967295L;
+
+    private static final int UINT_FAST32_MAX = (int) 4294967295L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT_FAST32_MAX 4294967295
-     * }
+     *}
      */
     public static int UINT_FAST32_MAX() {
         return UINT_FAST32_MAX;
     }
+
     private static final long UINT_FAST64_MAX = -1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINT_FAST64_MAX -1
-     * }
+     *}
      */
     public static long UINT_FAST64_MAX() {
         return UINT_FAST64_MAX;
     }
+
     private static final long INTPTR_MIN = -9223372036854775808L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INTPTR_MIN -9223372036854775808
-     * }
+     *}
      */
     public static long INTPTR_MIN() {
         return INTPTR_MIN;
     }
+
     private static final long INTPTR_MAX = 9223372036854775807L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INTPTR_MAX 9223372036854775807
-     * }
+     *}
      */
     public static long INTPTR_MAX() {
         return INTPTR_MAX;
     }
+
     private static final long UINTPTR_MAX = -1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINTPTR_MAX -1
-     * }
+     *}
      */
     public static long UINTPTR_MAX() {
         return UINTPTR_MAX;
     }
+
     private static final long INTMAX_MIN = -9223372036854775808L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INTMAX_MIN -9223372036854775808
-     * }
+     *}
      */
     public static long INTMAX_MIN() {
         return INTMAX_MIN;
     }
+
     private static final long INTMAX_MAX = 9223372036854775807L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define INTMAX_MAX 9223372036854775807
-     * }
+     *}
      */
     public static long INTMAX_MAX() {
         return INTMAX_MAX;
     }
+
     private static final long UINTMAX_MAX = -1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define UINTMAX_MAX -1
-     * }
+     *}
      */
     public static long UINTMAX_MAX() {
         return UINTMAX_MAX;
     }
+
     private static final long PTRDIFF_MIN = -9223372036854775808L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define PTRDIFF_MIN -9223372036854775808
-     * }
+     *}
      */
     public static long PTRDIFF_MIN() {
         return PTRDIFF_MIN;
     }
+
     private static final long PTRDIFF_MAX = 9223372036854775807L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define PTRDIFF_MAX 9223372036854775807
-     * }
+     *}
      */
     public static long PTRDIFF_MAX() {
         return PTRDIFF_MAX;
     }
+
     private static final long SIZE_MAX = -1L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define SIZE_MAX -1
-     * }
+     *}
      */
     public static long SIZE_MAX() {
         return SIZE_MAX;
     }
-    private static final int SIG_ATOMIC_MIN = (int)-2147483648L;
+
+    private static final int SIG_ATOMIC_MIN = (int) -2147483648L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define SIG_ATOMIC_MIN -2147483648
-     * }
+     *}
      */
     public static int SIG_ATOMIC_MIN() {
         return SIG_ATOMIC_MIN;
     }
-    private static final int SIG_ATOMIC_MAX = (int)2147483647L;
+
+    private static final int SIG_ATOMIC_MAX = (int) 2147483647L;
+
     /**
-     * {@snippet lang=c :
+     * {@snippet lang = c:
      * #define SIG_ATOMIC_MAX 2147483647
-     * }
+     *}
      */
     public static int SIG_ATOMIC_MAX() {
         return SIG_ATOMIC_MAX;

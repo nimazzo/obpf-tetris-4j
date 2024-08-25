@@ -27,7 +27,7 @@ public class ObpfMinoPositions {
 
     private static final GroupLayout $LAYOUT = MemoryLayout.structLayout(
         MemoryLayout.sequenceLayout(4, ObpfVec2.layout()).withName("positions")
-    ).withName("$anon$31:13");
+    ).withName("$anon$30:13");
 
     /**
      * The layout of this struct
