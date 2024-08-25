@@ -1,20 +1,22 @@
 package com.example;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public class JextractRunner {
     static final String CPROJECT_PATH = System.getProperty("CPROJECT_PATH");
 
     static {
-        // check if folder exists
-        Objects.requireNonNull(CPROJECT_PATH, "CPROJECT_PATH must be set");
+        if (CPROJECT_PATH == null) {
+            System.err.println("CPROJECT_PATH must be set");
+            System.exit(1);
+        }
 
-        if (!Path.of(CPROJECT_PATH).toFile().exists()) {
+        if (!Files.exists(Path.of(CPROJECT_PATH))) {
             System.err.println("C project path does not exist: " + CPROJECT_PATH);
             System.exit(1);
         }
