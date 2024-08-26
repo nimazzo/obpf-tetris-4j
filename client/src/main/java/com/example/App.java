@@ -2,6 +2,7 @@ package com.example;
 
 import com.example.network.GameServerConnection;
 import com.example.ui.Tetrion;
+import com.example.worker.Worker;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
@@ -9,8 +10,6 @@ import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.net.Socket;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class App extends Application {
@@ -29,8 +28,7 @@ public class App extends Application {
         stage.sizeToScene();
         stage.show();
 
-        CompletableFuture.runAsync(this::connectToLobbyServer, Executors.newVirtualThreadPerTaskExecutor());
-
+        Worker.execute(this::connectToLobbyServer);
         stage.setOnCloseRequest(_ -> simulator.stopSimulating());
     }
 

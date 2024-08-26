@@ -7,6 +7,7 @@ import com.example.network.GameServerConnection;
 import com.example.network.ServerMessage;
 import com.example.ui.Mino;
 import com.example.ui.Tetrion;
+import com.example.worker.Worker;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +49,7 @@ public class Simulator {
 
     public void startSimulating(GameServerConnection conn) {
         this.conn = conn;
-        CompletableFuture.runAsync(conn::connect, Executors.newVirtualThreadPerTaskExecutor());
+        Worker.execute(conn::connect);
 
         var msg = conn.waitForMessage();
         if (msg instanceof ServerMessage.GameStartMessage gameStartMessage) {
