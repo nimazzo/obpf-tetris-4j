@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class Tetrion extends StackPane {
+    private static final int Y_OFFSET = ObpfNativeInterface.obpf_tetrion_num_invisible_lines();
+
     public static final int ROWS = ObpfNativeInterface.OBPF_MATRIX_HEIGHT();
     public static final int COLS = ObpfNativeInterface.OBPF_MATRIX_WIDTH();
 
@@ -56,7 +58,7 @@ public class Tetrion extends StackPane {
     private final List<Mino> gameBoard = new ArrayList<>(ROWS * COLS);
 
     public Tetrion() {
-        canvas = new Canvas(COLS * PIXELS_PER_CELL + PADDING * 2, ROWS * PIXELS_PER_CELL + PADDING * 2);
+        canvas = new Canvas(COLS * PIXELS_PER_CELL + PADDING * 2, (ROWS - Y_OFFSET) * PIXELS_PER_CELL + PADDING * 2);
         var debug = new HBox(5.0, new Text("FPS:"), fpsCounter, new Text("Frame:"), frameCounter);
         var vbox = new VBox(5.0, canvas, debug);
 
@@ -118,7 +120,7 @@ public class Tetrion extends StackPane {
     private void drawMinos() {
         synchronized (gameBoard) {
             for (var mino : gameBoard) {
-                drawMino(mino.x(), mino.y(), mino.type(), mino.ghostPiece());
+                drawMino(mino.x(), mino.y() - Y_OFFSET, mino.type(), mino.ghostPiece());
             }
         }
     }
