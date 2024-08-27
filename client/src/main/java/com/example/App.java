@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.network.GameServerConnection;
+import com.example.network.NOOPGameServerConnection;
 import com.example.ui.Tetrion;
 import com.example.worker.Worker;
 import javafx.application.Application;
@@ -13,7 +14,8 @@ import java.net.Socket;
 import java.util.stream.Stream;
 
 public class App extends Application {
-    public static final int NUM_PLAYERS = 2;
+    private static final boolean SINGLE_PLAYER = true;
+    public static final int NUM_PLAYERS = 1;
     private Simulator simulator;
 
     public static void main(String[] args) {
@@ -33,6 +35,12 @@ public class App extends Application {
     }
 
     private void connectToLobbyServer() {
+        if (SINGLE_PLAYER) {
+            System.out.println("Starting Single Player Mode...");
+            simulator.startSimulating(new NOOPGameServerConnection());
+            return;
+        }
+
         System.out.println("Connecting to Server...");
         try (var socket = new Socket("localhost", 8081)) {
             var in = new DataInputStream(socket.getInputStream());

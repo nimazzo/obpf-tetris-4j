@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GameServerConnection {
+public class GameServerConnection implements ServerConnection {
     private Socket socket;
     private static final Object WRITE_LOCK = new Object();
     private final LinkedBlockingQueue<ServerMessage> messageQueue = new LinkedBlockingQueue<>();
@@ -28,6 +28,7 @@ public class GameServerConnection {
         this.gamePort = gamePort;
     }
 
+    @Override
     public void connect() {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             socket = new Socket("localhost", gamePort);
@@ -39,6 +40,7 @@ public class GameServerConnection {
         }
     }
 
+    @Override
     public void stop() {
         try {
             running.set(false);
@@ -48,10 +50,12 @@ public class GameServerConnection {
         }
     }
 
+    @Override
     public void addHeartbeatMessage(ServerMessage.HeartbeatMessage message) {
         heartbeatQueue.add(message);
     }
 
+    @Override
     public ServerMessage waitForMessage() {
         try {
             return messageQueue.take();
@@ -60,6 +64,7 @@ public class GameServerConnection {
         }
     }
 
+    @Override
     public Optional<ServerMessage> pollMessage() {
         return Optional.ofNullable(messageQueue.poll());
     }
