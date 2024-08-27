@@ -127,11 +127,33 @@ public class Simulator {
                     fillGameBoard(client.obpfTetrion(), gameBoard);
                 });
 
+                client.tetrion().updateHoldMinos((List<Mino> minos) -> {
+                    minos.clear();
+                    fillHoldMinos(client.obpfTetrion(), minos);
+                });
+
                 if (frame % 15 == 0) {
                     conn.addHeartbeatMessage(new ServerMessage.HeartbeatMessage(frame, List.copyOf(keyStatesBuffer)));
                     keyStatesBuffer.clear();
                 }
                 frame++;
+            }
+        }
+    }
+
+    private void fillHoldMinos(MemorySegment tetrion, List<Mino> minos) {
+        try (var arena = Arena.ofConfined()) {
+            var type = ObpfNativeInterface.obpf_tetrion_get_hold_piece(tetrion);
+            if (type != 0) {
+                var rotation = ObpfNativeInterface.OBPF_ROTATION_NORTH();
+                if (type == ObpfNativeInterface.OBPF_TETROMINO_TYPE_I()) {
+                    rotation = ObpfNativeInterface.OBPF_ROTATION_EAST();
+                }
+                var minoPositions = ObpfNativeInterface.obpf_tetromino_get_mino_positions(arena, type, rotation);
+                for (int i = 0; i < ObpfMinoPositions.positions$dimensions()[0]; i++) {
+                    var vec2 = ObpfMinoPositions.positions(minoPositions, i);
+                    minos.add(new Mino(ObpfVec2.x(vec2), ObpfVec2.y(vec2), type, false));
+                }
             }
         }
     }
@@ -157,6 +179,10 @@ public class Simulator {
                             player.tetrion().update(gameBoard -> {
                                 gameBoard.clear();
                                 fillGameBoard(player.obpfTetrion(), gameBoard);
+                            });
+                            player.tetrion().updateHoldMinos(minos -> {
+                                minos.clear();
+                                fillHoldMinos(player.obpfTetrion(), minos);
                             });
                             try {
                                 // calculate remaining time until next frame should be simulated

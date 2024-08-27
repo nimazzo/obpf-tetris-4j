@@ -15,8 +15,8 @@ import java.net.Socket;
 import java.util.stream.Stream;
 
 public class App extends Application {
-    private static final boolean SINGLE_PLAYER = true;
     public static final int NUM_PLAYERS = 1;
+    private static final boolean SINGLE_PLAYER = NUM_PLAYERS == 1;
     private Simulator simulator;
 
     public static void main(String[] args) {

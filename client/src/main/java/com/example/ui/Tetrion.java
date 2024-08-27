@@ -6,9 +6,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -16,40 +14,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class Tetrion extends StackPane {
-    private static final int Y_OFFSET = ObpfNativeInterface.obpf_tetrion_num_invisible_lines();
+import static com.example.ui.Colors.*;
+
+public class Tetrion extends HBox {
 
     public static final int ROWS = ObpfNativeInterface.OBPF_MATRIX_HEIGHT();
     public static final int COLS = ObpfNativeInterface.OBPF_MATRIX_WIDTH();
 
+    private static final int Y_OFFSET = ObpfNativeInterface.obpf_tetrion_num_invisible_lines();
+
     private static final int PIXELS_PER_CELL = 30;
     private static final int PADDING = 10;
 
-    private static final Color CLEAR_COLOR = Color.rgb(175, 175, 175);
-    private static final List<Color> COLORS = List.of(
-            Color.rgb(0, 0, 0),
-            Color.rgb(0, 240, 240),
-            Color.rgb(0, 0, 240),
-            Color.rgb(240, 160, 0),
-            Color.rgb(240, 240, 0),
-            Color.rgb(0, 240, 0),
-            Color.rgb(160, 0, 240),
-            Color.rgb(240, 0, 0)
-    );
-    private static final List<Color> GHOST_COLORS = List.of(
-            Color.rgb(0, 0, 0),
-            Color.rgb(0, 120, 120),
-            Color.rgb(0, 0, 120),
-            Color.rgb(120, 70, 0),
-            Color.rgb(120, 120, 0),
-            Color.rgb(0, 120, 0),
-            Color.rgb(90, 0, 120),
-            Color.rgb(120, 0, 0)
-    );
-
+    // UI elements
     private final Canvas canvas;
     private final Text fpsCounter = new Text();
     private final Text frameCounter = new Text();
+    private final PiecePreview holdPreview = new PiecePreview();
 
     // fps calculation
     private long totalFrameTime = 0;
@@ -60,10 +41,13 @@ public class Tetrion extends StackPane {
 
     public Tetrion() {
         canvas = new Canvas(COLS * PIXELS_PER_CELL + PADDING * 2, (ROWS - Y_OFFSET) * PIXELS_PER_CELL + PADDING * 2);
+        var canvasContainer = new StackPane(canvas);
+        var border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3)));
+        canvasContainer.setBorder(border);
         var debug = new HBox(5.0, new Text("FPS:"), fpsCounter, new Text("Frame:"), frameCounter);
-        var vbox = new VBox(5.0, canvas, debug);
-
-        getChildren().add(vbox);
+        var vbox = new VBox(5.0, canvasContainer, debug);
+        getChildren().addAll(holdPreview, vbox);
+        setSpacing(10.0);
         setPadding(new Insets(10.0));
 
         new AnimationTimer() {
@@ -78,6 +62,10 @@ public class Tetrion extends StackPane {
         synchronized (gameBoard) {
             updateGameBoard.accept(gameBoard);
         }
+    }
+
+    public void updateHoldMinos(Consumer<List<Mino>> updatePreview) {
+        holdPreview.update(updatePreview);
     }
 
     private void redraw(long now) {
@@ -97,11 +85,11 @@ public class Tetrion extends StackPane {
         drawBackground();
         drawMinos();
         drawGrid();
+        holdPreview.drawMinos();
     }
 
     private void drawBackground() {
         var gc = canvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(CLEAR_COLOR);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
