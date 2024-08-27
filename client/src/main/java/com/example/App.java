@@ -2,6 +2,7 @@ package com.example;
 
 import com.example.network.GameServerConnection;
 import com.example.network.NOOPGameServerConnection;
+import com.example.simulation.Simulator;
 import com.example.ui.Tetrion;
 import com.example.worker.Worker;
 import javafx.application.Application;

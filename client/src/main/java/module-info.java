@@ -3,4 +3,5 @@ module com.example.client {
     exports com.example to javafx.graphics;
     exports com.example.ui to javafx.graphics;
     exports com.example.network to javafx.graphics;
+    exports com.example.simulation to javafx.graphics;
 }
