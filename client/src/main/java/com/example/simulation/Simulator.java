@@ -117,6 +117,10 @@ public class Simulator {
                 var client = players.get(clientId);
                 client.tetrion().setCurrentFrame(frame);
 
+                if (ObpfNativeInterface.obpf_tetrion_is_game_over(client.obpfTetrion())) {
+                    client.tetrion().setGameOver();
+                }
+
                 keyStatesBuffer.add(Stream.of(keysPressed).mapToInt(b -> b.get() ? 1 : 0).toArray());
                 MemorySegment keyState = createKeyState(keysPressed);
                 ObpfNativeInterface.obpf_tetrion_simulate_next_frame(client.obpfTetrion(), keyState);
@@ -191,6 +195,12 @@ public class Simulator {
                         return new PlayerInfo(playerId, tetrions.get(players.size()), tetrion);
                     });
                     player.tetrion().setCurrentFrame(frame);
+
+                    if (ObpfNativeInterface.obpf_tetrion_is_game_over(player.obpfTetrion())) {
+                        player.tetrion().setGameOver();
+                        continue;
+                    }
+
                     executor.execute(() -> {
                         var timeStart = System.nanoTime();
                         var frameTime = TimeUnit.MILLISECONDS.toNanos((long) (1 / 60.0 * 1000.0));

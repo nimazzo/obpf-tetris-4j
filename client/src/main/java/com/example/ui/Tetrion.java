@@ -9,6 +9,8 @@ import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -25,10 +27,10 @@ public class Tetrion extends HBox {
     private static final int Y_OFFSET = ObpfNativeInterface.obpf_tetrion_num_invisible_lines();
 
     private static final int PIXELS_PER_CELL = 30;
-    private static final int PADDING = 10;
 
     // UI elements
     private final Canvas canvas;
+    private final StackPane canvasContainer = new StackPane();
     private final Text fpsCounter = new Text();
     private final Text frameCounter = new Text();
     private final PiecePreview holdPreview = new PiecePreview();
@@ -41,9 +43,11 @@ public class Tetrion extends HBox {
 
     private final List<Mino> gameBoard = new ArrayList<>(ROWS * COLS);
 
+    private boolean isGameOver = false;
+
     public Tetrion() {
-        canvas = new Canvas(COLS * PIXELS_PER_CELL + PADDING * 2, (ROWS - Y_OFFSET) * PIXELS_PER_CELL + PADDING * 2);
-        var canvasContainer = new StackPane(canvas);
+        canvas = new Canvas(COLS * PIXELS_PER_CELL, (ROWS - Y_OFFSET) * PIXELS_PER_CELL);
+        canvasContainer.getChildren().add(canvas);
         var border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3)));
         canvasContainer.setBorder(border);
         var debug = new HBox(5.0, new Text("FPS:"), fpsCounter, new Text("Frame:"), frameCounter);
@@ -106,10 +110,10 @@ public class Tetrion extends HBox {
         gc.setStroke(Color.BLACK);
 
         for (int row = 0; row <= ROWS; row++) {
-            gc.strokeLine(PADDING, row * PIXELS_PER_CELL + PADDING, canvas.getWidth() - PADDING, row * PIXELS_PER_CELL + PADDING);
+            gc.strokeLine(0, row * PIXELS_PER_CELL, canvas.getWidth(), row * PIXELS_PER_CELL);
         }
         for (int col = 0; col <= COLS; col++) {
-            gc.strokeLine(col * PIXELS_PER_CELL + PADDING, PADDING, col * PIXELS_PER_CELL + PADDING, canvas.getHeight() - PADDING);
+            gc.strokeLine(col * PIXELS_PER_CELL, 0, col * PIXELS_PER_CELL, canvas.getHeight());
         }
     }
 
@@ -128,10 +132,27 @@ public class Tetrion extends HBox {
     }
 
     private double scale(int value) {
-        return PADDING + value * PIXELS_PER_CELL;
+        return value * PIXELS_PER_CELL;
     }
 
     public void setCurrentFrame(long frame) {
         Platform.runLater(() -> frameCounter.setText("" + frame));
+    }
+
+    public void setGameOver() {
+        if (!isGameOver) {
+            isGameOver = true;
+            var greyScreen = new Pane();
+            greyScreen.setBackground(Background.fill(Color.rgb(0, 0, 0, 0.5)));
+            greyScreen.setPrefSize(canvasContainer.getWidth(), canvasContainer.getHeight());
+
+            var gameOverMessage = new Text("Game Over");
+            gameOverMessage.setFill(Color.RED);
+            var font = Font.font("Arial Black", FontWeight.EXTRA_BOLD, 45);
+            gameOverMessage.setFont(font);
+            gameOverMessage.setStroke(Color.BLACK);
+            gameOverMessage.setStrokeWidth(3);
+            Platform.runLater(() -> canvasContainer.getChildren().addAll(greyScreen, gameOverMessage));
+        }
     }
 }
