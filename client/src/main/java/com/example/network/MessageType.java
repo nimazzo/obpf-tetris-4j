@@ -23,7 +23,7 @@ public enum MessageType {
         this.value = value;
     }
 
-    static MessageType fromValue(int value) {
+    public static MessageType fromValue(int value) {
         return map.get(value);
     }
 }
