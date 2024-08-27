@@ -205,6 +205,10 @@ public class Simulator {
 
                             var holdPiece = getHoldPiece(player.obpfTetrion());
                             player.tetrion().updateHoldPiece(holdPiece);
+                            player.tetrion().updatePreviewPieces(previewTetrominos -> {
+                                previewTetrominos.clear();
+                                fillPreviewTetrominos(player.obpfTetrion(), previewTetrominos);
+                            });
 
                             try {
                                 // calculate remaining time until next frame should be simulated
