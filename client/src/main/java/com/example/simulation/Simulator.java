@@ -127,10 +127,13 @@ public class Simulator {
                     fillGameBoard(client.obpfTetrion(), gameBoard);
                 });
 
-                client.tetrion().updateHoldMinos((List<Mino> minos) -> {
-                    minos.clear();
-                    fillHoldMinos(client.obpfTetrion(), minos);
+                client.tetrion().updatePreviewPieces(previewTetrominos -> {
+                    previewTetrominos.clear();
+                    fillPreviewTetrominos(client.obpfTetrion(), previewTetrominos);
                 });
+
+                var holdPiece = getHoldPiece(client.obpfTetrion());
+                client.tetrion().updateHoldPiece(holdPiece);
 
                 if (frame % 15 == 0) {
                     conn.addHeartbeatMessage(new ServerMessage.HeartbeatMessage(frame, List.copyOf(keyStatesBuffer)));
@@ -141,21 +144,40 @@ public class Simulator {
         }
     }
 
-    private void fillHoldMinos(MemorySegment tetrion, List<Mino> minos) {
+    private void fillPreviewTetrominos(MemorySegment tetrion, List<Tetromino> previewTetrominos) {
         try (var arena = Arena.ofConfined()) {
-            var type = ObpfNativeInterface.obpf_tetrion_get_hold_piece(tetrion);
-            if (type != 0) {
-                var rotation = ObpfNativeInterface.OBPF_ROTATION_NORTH();
-                if (type == ObpfNativeInterface.OBPF_TETROMINO_TYPE_I()) {
-                    rotation = ObpfNativeInterface.OBPF_ROTATION_EAST();
-                }
-                var minoPositions = ObpfNativeInterface.obpf_tetromino_get_mino_positions(arena, type, rotation);
-                for (int i = 0; i < ObpfMinoPositions.positions$dimensions()[0]; i++) {
-                    var vec2 = ObpfMinoPositions.positions(minoPositions, i);
-                    minos.add(new Mino(ObpfVec2.x(vec2), ObpfVec2.y(vec2), type, false));
+            var previewPieces = ObpfNativeInterface.obpf_tetrion_get_preview_pieces(arena, tetrion);
+            for (int i = 0; i < ObpfPreviewPieces.types$dimensions()[0]; i++) {
+                var type = ObpfPreviewPieces.types(previewPieces, i);
+                if (type != 0) {
+                    previewTetrominos.add(new Tetromino(getTetrominoOfType(type)));
                 }
             }
         }
+    }
+
+    private Tetromino getHoldPiece(MemorySegment tetrion) {
+        var type = ObpfNativeInterface.obpf_tetrion_get_hold_piece(tetrion);
+        if (type != 0) {
+            return new Tetromino(getTetrominoOfType(type));
+        }
+        return new Tetromino(List.of());
+    }
+
+    private static List<Mino> getTetrominoOfType(int type) {
+        var rotation = ObpfNativeInterface.OBPF_ROTATION_NORTH();
+        if (type == ObpfNativeInterface.OBPF_TETROMINO_TYPE_I()) {
+            rotation = ObpfNativeInterface.OBPF_ROTATION_EAST();
+        }
+        var minos = new ArrayList<Mino>();
+        try (var arena = Arena.ofConfined()) {
+            var minoPositions = ObpfNativeInterface.obpf_tetromino_get_mino_positions(arena, type, rotation);
+            for (int i = 0; i < ObpfMinoPositions.positions$dimensions()[0]; i++) {
+                var vec2 = ObpfMinoPositions.positions(minoPositions, i);
+                minos.add(new Mino(ObpfVec2.x(vec2), ObpfVec2.y(vec2), type, false));
+            }
+        }
+        return minos;
     }
 
     private void updateOtherTetrions(long frame, LinkedHashMap<Integer, List<Integer>> clientsKeyStates) {
@@ -180,10 +202,10 @@ public class Simulator {
                                 gameBoard.clear();
                                 fillGameBoard(player.obpfTetrion(), gameBoard);
                             });
-                            player.tetrion().updateHoldMinos(minos -> {
-                                minos.clear();
-                                fillHoldMinos(player.obpfTetrion(), minos);
-                            });
+
+                            var holdPiece = getHoldPiece(player.obpfTetrion());
+                            player.tetrion().updateHoldPiece(holdPiece);
+
                             try {
                                 // calculate remaining time until next frame should be simulated
                                 var sleepTime = Math.max(0, timeStart + i * frameTime - System.nanoTime());
