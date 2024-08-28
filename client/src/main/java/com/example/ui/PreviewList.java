@@ -18,9 +18,9 @@ public class PreviewList extends VBox {
 
     public PreviewList() {
         setSpacing(10);
-        setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3))));
+        setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3))));
         setMaxHeight(Region.USE_PREF_SIZE);
-        setBackground(Background.fill(Colors.CLEAR_COLOR));
+        setBackground(Background.fill(Colors.CLEAR_COLOR.deriveColor(0, 1, 1, 0.5)));
 
         for (int i = 0; i < SIZE; i++) {
             previewPieces.add(new PiecePreview(15, 4, 5, 3));

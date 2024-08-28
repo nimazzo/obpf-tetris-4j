@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.example.ui.Colors.*;
+import static com.example.ui.TextFactory.createText;
 
 public class Tetrion extends HBox {
 
@@ -30,7 +31,7 @@ public class Tetrion extends HBox {
     // UI elements
     private final Canvas canvas;
     private final StackPane canvasContainer = new StackPane();
-    private final Text frameCounter = new Text();
+    private final Text frameCounter = createText("", FontWeight.BOLD, 20, Color.WHITE, 1.0, Color.BLACK);
     private final PiecePreview holdPreview = new PiecePreview();
     private final PreviewList previewList = new PreviewList();
 
@@ -41,9 +42,10 @@ public class Tetrion extends HBox {
     public Tetrion() {
         canvas = new Canvas(COLS * PIXELS_PER_CELL, (ROWS - Y_OFFSET) * PIXELS_PER_CELL);
         canvasContainer.getChildren().add(canvas);
-        var border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(3)));
+        var border = new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
         canvasContainer.setBorder(border);
-        var debug = new HBox(5.0, new Text("Frame:"), frameCounter);
+        var frameText = createText("Frame:", FontWeight.BOLD, 20, Color.WHITE, 1.0, Color.BLACK);
+        var debug = new HBox(5.0, frameText, frameCounter);
         var vbox = new VBox(5.0, canvasContainer, debug);
         getChildren().addAll(holdPreview, vbox, previewList);
         setSpacing(10.0);
@@ -65,6 +67,10 @@ public class Tetrion extends HBox {
     }
 
     public void redraw() {
+        if (isGameOver) {
+            return;
+        }
+
         drawBackground();
         drawMinos();
         drawGrid();
@@ -74,6 +80,7 @@ public class Tetrion extends HBox {
 
     private void drawBackground() {
         var gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(CLEAR_COLOR);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }

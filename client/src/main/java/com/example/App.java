@@ -7,18 +7,25 @@ import com.example.ui.Tetrion;
 import com.example.worker.Worker;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
+
+import static com.example.ui.TextFactory.createText;
 
 public class App extends Application {
     public static final int NUM_PLAYERS = 1;
@@ -27,7 +34,7 @@ public class App extends Application {
 
     // UI elements
     private final List<Tetrion> tetrions = new ArrayList<>(NUM_PLAYERS);
-    private final Text fpsCounter = new Text();
+    private final IntegerProperty fpsProperty = new SimpleIntegerProperty(0);
 
     // fps calculation
     private long totalFrameTime = 0;
@@ -82,10 +89,25 @@ public class App extends Application {
         var tetrionsBox = new HBox(10.0);
         tetrionsBox.getChildren().addAll(tetrions);
 
-        var fpsBox = new HBox(new Text("FPS:"), fpsCounter);
+        var fpsText = createText("FPS:", FontWeight.EXTRA_BOLD, 30, Color.WHITE, 2.0, Color.BLACK);
+        var fpsCounter = createText("0", FontWeight.EXTRA_BOLD, 30, Color.WHITE, 2.0, Color.BLACK);
+        var fpsBox = new HBox(10.0, fpsText, fpsCounter);
+
+        fpsCounter.textProperty().bind(Bindings.convert(fpsProperty));
+
         fpsBox.setPadding(new Insets(10.0));
 
-        var root = new VBox(10.0, tetrionsBox, fpsBox);
+        var root = new StackPane();
+
+        var background = new Pane();
+        background.setEffect(new javafx.scene.effect.GaussianBlur(2));
+        var img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("background.jpeg")));
+        var backgroundImg = new BackgroundImage(img, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+                new BackgroundSize(500, 500, false, false, false, false));
+        background.setBackground(new Background(backgroundImg));
+
+        var content = new VBox(10.0, tetrionsBox, fpsBox);
+        root.getChildren().addAll(background, content);
         var scene = new Scene(root);
 
         setupKeyboardInput(scene);
@@ -129,7 +151,7 @@ public class App extends Application {
             long averageFrameTime = totalFrameTime / frameTimeIndex;
             long fps = 1_000_000_000 / averageFrameTime;
             System.out.println("Num frames: " + frameTimeIndex + " total frame time: " + totalFrameTime + " average frame time: " + averageFrameTime);
-            fpsCounter.setText(String.format("%d", fps));
+            fpsProperty.set((int) fps);
 
             totalFrameTime = 0;
             frameTimeIndex = 0;

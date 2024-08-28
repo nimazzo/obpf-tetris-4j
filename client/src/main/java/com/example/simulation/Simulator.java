@@ -115,7 +115,6 @@ public class Simulator {
             var now = System.nanoTime();
             if (now - lastSimulated > 16_000_000) {
                 var client = players.get(clientId);
-                client.tetrion().setCurrentFrame(frame);
 
                 if (ObpfNativeInterface.obpf_tetrion_is_game_over(client.obpfTetrion())) {
                     client.tetrion().setGameOver();
@@ -142,6 +141,10 @@ public class Simulator {
                 if (frame % 15 == 0) {
                     conn.addHeartbeatMessage(new ServerMessage.HeartbeatMessage(frame, List.copyOf(keyStatesBuffer)));
                     keyStatesBuffer.clear();
+                }
+
+                if (!ObpfNativeInterface.obpf_tetrion_is_game_over(client.obpfTetrion())) {
+                    client.tetrion().setCurrentFrame(frame);
                 }
                 frame++;
             }
@@ -194,20 +197,20 @@ public class Simulator {
                         var tetrion = ObpfNativeInterface.obpf_create_tetrion(seed);
                         return new PlayerInfo(playerId, tetrions.get(players.size()), tetrion);
                     });
-                    player.tetrion().setCurrentFrame(frame);
-
                     if (ObpfNativeInterface.obpf_tetrion_is_game_over(player.obpfTetrion())) {
-                        player.tetrion().setGameOver();
                         continue;
                     }
 
                     executor.execute(() -> {
                         var timeStart = System.nanoTime();
                         var frameTime = TimeUnit.MILLISECONDS.toNanos((long) (1 / 60.0 * 1000.0));
+                        var startFrame = frame - 14;
                         for (int i = 0; i < keyStates.size(); i++) {
                             var encoded = keyStates.get(i);
                             var keyState = createKeyState(decodeKeyState(encoded));
                             ObpfNativeInterface.obpf_tetrion_simulate_next_frame(player.obpfTetrion(), keyState);
+                            player.tetrion().setCurrentFrame(startFrame);
+
                             player.tetrion().update(gameBoard -> {
                                 gameBoard.clear();
                                 fillGameBoard(player.obpfTetrion(), gameBoard);
@@ -220,6 +223,11 @@ public class Simulator {
                                 fillPreviewTetrominos(player.obpfTetrion(), previewTetrominos);
                             });
 
+                            if (ObpfNativeInterface.obpf_tetrion_is_game_over(player.obpfTetrion())) {
+                                player.tetrion().setGameOver();
+                                break;
+                            }
+
                             try {
                                 // calculate remaining time until next frame should be simulated
                                 var sleepTime = Math.max(0, timeStart + i * frameTime - System.nanoTime());
@@ -227,6 +235,7 @@ public class Simulator {
                             } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
                             }
+                            startFrame++;
                         }
                     });
                 }
