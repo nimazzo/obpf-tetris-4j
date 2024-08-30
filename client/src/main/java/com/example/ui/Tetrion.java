@@ -132,7 +132,7 @@ public class Tetrion extends HBox {
             isGameOver = true;
             var greyScreen = new Pane();
             greyScreen.setBackground(Background.fill(Color.rgb(0, 0, 0, 0.5)));
-            greyScreen.setPrefSize(canvasContainer.getWidth(), canvasContainer.getHeight());
+            greyScreen.setMaxSize(canvasContainer.getWidth(), canvasContainer.getHeight());
 
             var gameOverMessage = new Text("Game Over");
             gameOverMessage.setFill(Color.RED);
