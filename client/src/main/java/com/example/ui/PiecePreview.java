@@ -32,6 +32,7 @@ public class PiecePreview extends StackPane {
         canvas = new Canvas(size * pixelsPerCell + padding, size * pixelsPerCell + padding);
         setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(borderWidth))));
         setMaxHeight(Region.USE_PREF_SIZE);
+        setMaxWidth(Region.USE_PREF_SIZE);
         setBackground(Background.fill(Colors.CLEAR_COLOR.deriveColor(0, 1, 1, 0.5)));
         getChildren().add(canvas);
     }

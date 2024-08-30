@@ -36,6 +36,7 @@ public class Simulator {
     private int clientId;
 
     private final CountDownLatch gameFinished = new CountDownLatch(1);
+    private long startTime;
 
     public Simulator(List<Tetrion> tetrions) {
         this.tetrions = tetrions;
@@ -61,6 +62,7 @@ public class Simulator {
             running.set(true);
         }
         try (var executor = Executors.newScheduledThreadPool(2)) {
+            startTime = System.currentTimeMillis();
             executor.scheduleAtFixedRate(this::simulate, 0, 1, TimeUnit.MILLISECONDS);
             executor.scheduleAtFixedRate(this::readServerMessages, 0, 1, TimeUnit.MILLISECONDS);
             gameFinished.await();
@@ -72,21 +74,6 @@ public class Simulator {
     private void onAction(int id, MemorySegment userData) {
         var action = Actions.fromId(id);
         System.err.println("Action callback called with action: " + action);
-
-        switch (action) {
-            case CLEAR1, CLEAR2, CLEAR3, CLEAR4, ALL_CLEAR -> {
-                try (var allocator = Arena.ofConfined()) {
-                    var stats = ObpfNativeInterface.obpf_tetrion_get_stats(allocator, players.get(clientId).obpfTetrion());
-                    var score = ObpfStats.score(stats);
-                    var linesCleared = ObpfStats.lines_cleared(stats);
-                    var level = ObpfStats.level(stats);
-
-                    System.out.println("Score: " + score + ", Lines Cleared: " + linesCleared + ", Level: " + level);
-                }
-            }
-            default -> {
-            }
-        }
     }
 
     private void readServerMessages() {
@@ -125,19 +112,6 @@ public class Simulator {
                 ObpfNativeInterface.obpf_tetrion_simulate_next_frame(client.obpfTetrion(), keyState);
                 lastSimulated = now;
 
-                client.tetrion().update(gameBoard -> {
-                    gameBoard.clear();
-                    fillGameBoard(client.obpfTetrion(), gameBoard);
-                });
-
-                client.tetrion().updatePreviewPieces(previewTetrominos -> {
-                    previewTetrominos.clear();
-                    fillPreviewTetrominos(client.obpfTetrion(), previewTetrominos);
-                });
-
-                var holdPiece = getHoldPiece(client.obpfTetrion());
-                client.tetrion().updateHoldPiece(holdPiece);
-
                 if (frame % 15 == 0) {
                     conn.addHeartbeatMessage(new ServerMessage.HeartbeatMessage(frame, List.copyOf(keyStatesBuffer)));
                     keyStatesBuffer.clear();
@@ -145,6 +119,28 @@ public class Simulator {
 
                 if (!ObpfNativeInterface.obpf_tetrion_is_game_over(client.obpfTetrion())) {
                     client.tetrion().setCurrentFrame(frame);
+
+                    client.tetrion().update(gameBoard -> {
+                        gameBoard.clear();
+                        fillGameBoard(client.obpfTetrion(), gameBoard);
+                    });
+
+                    client.tetrion().updatePreviewPieces(previewTetrominos -> {
+                        previewTetrominos.clear();
+                        fillPreviewTetrominos(client.obpfTetrion(), previewTetrominos);
+                    });
+
+                    var holdPiece = getHoldPiece(client.obpfTetrion());
+                    client.tetrion().updateHoldPiece(holdPiece);
+
+                    try (var allocator = Arena.ofConfined()) {
+                        var stats = ObpfNativeInterface.obpf_tetrion_get_stats(allocator, client.obpfTetrion());
+                        var score = ObpfStats.score(stats);
+                        var linesCleared = ObpfStats.lines_cleared(stats);
+                        var level = ObpfStats.level(stats);
+                        var timeElapsed = System.currentTimeMillis() - startTime;
+                        client.tetrion().updateStats(new Stats(level, score, linesCleared, timeElapsed));
+                    }
                 }
                 frame++;
             }
