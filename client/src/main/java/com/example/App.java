@@ -2,8 +2,10 @@ package com.example;
 
 import com.example.network.GameServerConnection;
 import com.example.network.NOOPGameServerConnection;
+import com.example.simulation.GameMode;
 import com.example.simulation.Simulator;
 import com.example.ui.Tetrion;
+import com.example.ui.menu.MainMenu;
 import com.example.worker.Worker;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -28,13 +30,18 @@ import java.util.stream.Stream;
 import static com.example.ui.TextFactory.createText;
 
 public class App extends Application {
-    public static final int NUM_PLAYERS = 1;
-    private static final boolean SINGLE_PLAYER = NUM_PLAYERS == 1;
+    public static final int NUM_PLAYERS = 2;
+    private GameMode gameMode = GameMode.SINGLE_PLAYER;
+
     private Simulator simulator;
 
     // UI elements
-    private final List<Tetrion> tetrions = new ArrayList<>(NUM_PLAYERS);
+    private Stage stage;
+    private final List<Tetrion> tetrions = new ArrayList<>();
     private final IntegerProperty fpsProperty = new SimpleIntegerProperty(0);
+    private final MainMenu mainMenu = new MainMenu();
+    private final VBox gameContent = new VBox(10.0);
+    private final HBox tetrionsBox = new HBox(10.0);
 
     // fps calculation
     private long totalFrameTime = 0;
@@ -47,13 +54,14 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
+        this.stage = stage;
         stage.setScene(createContent());
         stage.setTitle("Obpf TetrisJ");
 
         stage.sizeToScene();
         stage.show();
 
-        Worker.execute(this::connectToLobbyServer);
+        simulator = new Simulator(tetrions);
         stage.setOnCloseRequest(_ -> simulator.stopSimulating());
 
         new AnimationTimer() {
@@ -65,7 +73,7 @@ public class App extends Application {
     }
 
     private void connectToLobbyServer() {
-        if (SINGLE_PLAYER) {
+        if (gameMode == GameMode.SINGLE_PLAYER) {
             System.out.println("Starting Single Player Mode...");
             simulator.startSimulating(new NOOPGameServerConnection());
             return;
@@ -83,18 +91,11 @@ public class App extends Application {
     }
 
     private Scene createContent() {
-        Stream.generate(Tetrion::new).limit(NUM_PLAYERS).forEach(tetrions::add);
-        simulator = new Simulator(tetrions);
-
-        var tetrionsBox = new HBox(10.0);
-        tetrionsBox.getChildren().addAll(tetrions);
-
         var fpsText = createText("FPS:", FontWeight.EXTRA_BOLD, 30, Color.WHITE, 2.0, Color.BLACK);
         var fpsCounter = createText("0", FontWeight.EXTRA_BOLD, 30, Color.WHITE, 2.0, Color.BLACK);
         var fpsBox = new HBox(10.0, fpsText, fpsCounter);
 
         fpsCounter.textProperty().bind(Bindings.convert(fpsProperty));
-
         fpsBox.setPadding(new Insets(10.0));
 
         var root = new StackPane();
@@ -106,9 +107,14 @@ public class App extends Application {
                 new BackgroundSize(500, 500, false, false, false, false));
         background.setBackground(new Background(backgroundImg));
 
-        var content = new VBox(10.0, tetrionsBox, fpsBox);
-        root.getChildren().addAll(background, content);
+        gameContent.getChildren().addAll(tetrionsBox, fpsBox);
+        gameContent.setVisible(false);
+        root.getChildren().addAll(background, gameContent, mainMenu);
+
         var scene = new Scene(root);
+
+        mainMenu.setOnSinglePlayerButtonClicked(this::startSinglePlayerGame);
+        mainMenu.setOnMultiPlayerButtonClicked(this::startMultiPlayerGame);
 
         setupKeyboardInput(scene);
         return scene;
@@ -124,6 +130,7 @@ public class App extends Application {
                 case UP -> simulator.setKeyState(4, true);
                 case CONTROL -> simulator.setKeyState(5, true);
                 case ENTER -> simulator.setKeyState(6, true);
+                case ESCAPE -> toggleMenu();
             }
         });
 
@@ -138,6 +145,16 @@ public class App extends Application {
                 case ENTER -> simulator.setKeyState(6, false);
             }
         });
+    }
+
+    private void toggleMenu() {
+        if (gameContent.isVisible()) {
+            gameContent.setVisible(false);
+            mainMenu.setVisible(true);
+        } else {
+            gameContent.setVisible(true);
+            mainMenu.setVisible(false);
+        }
     }
 
     private void redraw(long now) {
@@ -156,5 +173,33 @@ public class App extends Application {
             totalFrameTime = 0;
             frameTimeIndex = 0;
         }
+    }
+
+    private void prepareGame() {
+        simulator.stopSimulating();
+
+        tetrions.clear();
+        tetrionsBox.getChildren().clear();
+        var num = switch (gameMode) {
+            case SINGLE_PLAYER -> 1;
+            case MULTI_PLAYER -> NUM_PLAYERS;
+        };
+        Stream.generate(Tetrion::new).limit(num).forEach(tetrions::add);
+        tetrionsBox.getChildren().addAll(tetrions);
+        mainMenu.setVisible(false);
+        gameContent.setVisible(true);
+        stage.sizeToScene();
+    }
+
+    private void startSinglePlayerGame() {
+        gameMode = GameMode.SINGLE_PLAYER;
+        prepareGame();
+        Worker.execute(this::connectToLobbyServer);
+    }
+
+    private void startMultiPlayerGame() {
+        gameMode = GameMode.MULTI_PLAYER;
+        prepareGame();
+        Worker.execute(this::connectToLobbyServer);
     }
 }

@@ -35,13 +35,15 @@ public class Simulator {
     private long seed;
     private int clientId;
 
-    private final CountDownLatch gameFinished = new CountDownLatch(1);
+    private CountDownLatch gameFinished = new CountDownLatch(1);
 
     public Simulator(List<Tetrion> tetrions) {
         this.tetrions = tetrions;
     }
 
     public void startSimulating(ServerConnection conn) {
+        resetState();
+
         this.conn = conn;
         Worker.execute(conn::connect);
 
@@ -70,19 +72,6 @@ public class Simulator {
         }
     }
 
-    private void onAction(int id, MemorySegment userData) {
-        var action = Actions.fromId(id);
-        System.err.println("Action callback called with action: " + action);
-    }
-
-    private void readServerMessages() {
-        var msg = conn.pollMessage();
-        if (msg.isEmpty()) return;
-
-        var stateBroadcastMessage = (ServerMessage.StateBroadcastMessage) msg.get();
-        updateOtherTetrions(stateBroadcastMessage.messageFrame(), stateBroadcastMessage.clientStates());
-    }
-
     public void stopSimulating() {
         running.set(false);
         gameFinished.countDown();
@@ -94,6 +83,29 @@ public class Simulator {
     public void setKeyState(int key, boolean isPressed) {
         if (!running.get()) return;
         keysPressed[key].set(isPressed);
+    }
+
+    private void resetState() {
+        players.clear();
+        frame = 1;
+        keyStatesBuffer.clear();
+        for (AtomicBoolean atomicBoolean : keysPressed) {
+            atomicBoolean.set(false);
+        }
+        gameFinished = new CountDownLatch(1);
+    }
+
+    private void onAction(int id, MemorySegment userData) {
+        var action = Actions.fromId(id);
+        System.err.println("Action callback called with action: " + action);
+    }
+
+    private void readServerMessages() {
+        var msg = conn.pollMessage();
+        if (msg.isEmpty()) return;
+
+        var stateBroadcastMessage = (ServerMessage.StateBroadcastMessage) msg.get();
+        updateOtherTetrions(stateBroadcastMessage.messageFrame(), stateBroadcastMessage.clientStates());
     }
 
     private void simulate() {

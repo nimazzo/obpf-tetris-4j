@@ -10,14 +10,14 @@ public class TextFactory {
     }
 
     public static Text createText(String text, FontWeight fontWeight, int fontSize, Color color, double outlineWidth, Color outlineColor) {
-        var fpsText = new Text(text);
+        var textNode = new Text(text);
         var font = Font.font("Arial Black", fontWeight, fontSize);
-        fpsText.setFont(font);
+        textNode.setFont(font);
 
-        fpsText.setFill(color);
-        fpsText.setStroke(outlineColor);
-        fpsText.setStrokeWidth(outlineWidth);
-        
-        return fpsText;
+        textNode.setFill(color);
+        textNode.setStroke(outlineColor);
+        textNode.setStrokeWidth(outlineWidth);
+
+        return textNode;
     }
 }
