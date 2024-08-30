@@ -175,7 +175,7 @@ public class App extends Application {
         }
     }
 
-    private void prepareGame() {
+    private void prepareAndStartGame() {
         simulator.stopSimulating();
 
         tetrions.clear();
@@ -189,17 +189,17 @@ public class App extends Application {
         mainMenu.setVisible(false);
         gameContent.setVisible(true);
         stage.sizeToScene();
+
+        Worker.execute(this::connectToLobbyServer);
     }
 
     private void startSinglePlayerGame() {
         gameMode = GameMode.SINGLE_PLAYER;
-        prepareGame();
-        Worker.execute(this::connectToLobbyServer);
+        prepareAndStartGame();
     }
 
     private void startMultiPlayerGame() {
         gameMode = GameMode.MULTI_PLAYER;
-        prepareGame();
-        Worker.execute(this::connectToLobbyServer);
+        prepareAndStartGame();
     }
 }
