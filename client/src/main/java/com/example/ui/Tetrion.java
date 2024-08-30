@@ -47,6 +47,7 @@ public class Tetrion extends HBox {
         canvasContainer.getChildren().add(canvas);
         var border = new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5)));
         canvasContainer.setBorder(border);
+        canvasContainer.setMaxWidth(USE_PREF_SIZE);
         var frameText = createText("Frame:", FontWeight.BOLD, 20, Color.WHITE, 1.0, Color.BLACK);
         var debug = new HBox(5.0, frameText, frameCounter);
         var vbox = new VBox(5.0, canvasContainer, debug);
