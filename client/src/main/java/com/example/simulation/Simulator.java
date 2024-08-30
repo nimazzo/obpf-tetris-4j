@@ -23,7 +23,7 @@ public class Simulator {
     private final Map<Integer, PlayerInfo> players = new LinkedHashMap<>();
 
     // calculate when to simulate next frame
-    private long lastSimulated = System.nanoTime();
+    private long startTime;
     private long frame = 1;
 
     // Multiplayer Network
@@ -36,7 +36,6 @@ public class Simulator {
     private int clientId;
 
     private final CountDownLatch gameFinished = new CountDownLatch(1);
-    private long startTime;
 
     public Simulator(List<Tetrion> tetrions) {
         this.tetrions = tetrions;
@@ -99,8 +98,8 @@ public class Simulator {
 
     private void simulate() {
         if (running.get()) {
-            var now = System.nanoTime();
-            if (now - lastSimulated > 16_000_000) {
+            var frameToSimulate = (int) ((System.currentTimeMillis() - startTime) / (1000.0 / 60.0));
+            while (frameToSimulate > frame) {
                 var client = players.get(clientId);
 
                 if (ObpfNativeInterface.obpf_tetrion_is_game_over(client.obpfTetrion())) {
@@ -110,7 +109,6 @@ public class Simulator {
                 keyStatesBuffer.add(Stream.of(keysPressed).mapToInt(b -> b.get() ? 1 : 0).toArray());
                 MemorySegment keyState = createKeyState(keysPressed);
                 ObpfNativeInterface.obpf_tetrion_simulate_next_frame(client.obpfTetrion(), keyState);
-                lastSimulated = now;
 
                 if (frame % 15 == 0) {
                     conn.addHeartbeatMessage(new ServerMessage.HeartbeatMessage(frame, List.copyOf(keyStatesBuffer)));
