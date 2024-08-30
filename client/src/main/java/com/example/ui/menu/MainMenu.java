@@ -34,10 +34,8 @@ public class MainMenu extends StackPane {
 
         singlePlayerButton = new Button("Single Player");
         singlePlayerButton.setFont(Font.font(15));
-        singlePlayerButton.setOnAction(e -> System.out.println("Single Player"));
 
         multiPlayerButton = new Button("Multi Player");
-        multiPlayerButton.setOnAction(e -> System.out.println("Multi Player"));
         multiPlayerButton.setFont(Font.font(15));
 
         var buttonBox = new VBox(15, singlePlayerButton, multiPlayerButton);
