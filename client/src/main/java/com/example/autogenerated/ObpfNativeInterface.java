@@ -1203,6 +1203,64 @@ public class ObpfNativeInterface {
         }
     }
 
+    private static class obpf_clone_tetrion {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            ObpfNativeInterface.C_POINTER,
+            ObpfNativeInterface.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = ObpfNativeInterface.findOrThrow("obpf_clone_tetrion");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * struct ObpfTetrion *obpf_clone_tetrion(const struct ObpfTetrion *tetrion)
+     * }
+     */
+    public static FunctionDescriptor obpf_clone_tetrion$descriptor() {
+        return obpf_clone_tetrion.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * struct ObpfTetrion *obpf_clone_tetrion(const struct ObpfTetrion *tetrion)
+     * }
+     */
+    public static MethodHandle obpf_clone_tetrion$handle() {
+        return obpf_clone_tetrion.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * struct ObpfTetrion *obpf_clone_tetrion(const struct ObpfTetrion *tetrion)
+     * }
+     */
+    public static MemorySegment obpf_clone_tetrion$address() {
+        return obpf_clone_tetrion.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * struct ObpfTetrion *obpf_clone_tetrion(const struct ObpfTetrion *tetrion)
+     * }
+     */
+    public static MemorySegment obpf_clone_tetrion(MemorySegment tetrion) {
+        var mh$ = obpf_clone_tetrion.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("obpf_clone_tetrion", tetrion);
+            }
+            return (MemorySegment)mh$.invokeExact(tetrion);
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
     private static class obpf_tetrion_set_action_handler {
         public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
             ObpfNativeInterface.C_POINTER,
@@ -1512,7 +1570,7 @@ public class ObpfNativeInterface {
     /**
      * Function descriptor for:
      * {@snippet lang=c :
-     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2 *out_position)
+     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2i *out_position)
      * }
      */
     public static FunctionDescriptor obpf_tetrion_try_get_active_tetromino_transform$descriptor() {
@@ -1522,7 +1580,7 @@ public class ObpfNativeInterface {
     /**
      * Downcall method handle for:
      * {@snippet lang=c :
-     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2 *out_position)
+     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2i *out_position)
      * }
      */
     public static MethodHandle obpf_tetrion_try_get_active_tetromino_transform$handle() {
@@ -1532,7 +1590,7 @@ public class ObpfNativeInterface {
     /**
      * Address for:
      * {@snippet lang=c :
-     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2 *out_position)
+     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2i *out_position)
      * }
      */
     public static MemorySegment obpf_tetrion_try_get_active_tetromino_transform$address() {
@@ -1541,7 +1599,7 @@ public class ObpfNativeInterface {
 
     /**
      * {@snippet lang=c :
-     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2 *out_position)
+     * _Bool obpf_tetrion_try_get_active_tetromino_transform(const struct ObpfTetrion *tetrion, ObpfTetrominoType *out_type, ObpfRotation *out_rotation, ObpfVec2i *out_position)
      * }
      */
     public static boolean obpf_tetrion_try_get_active_tetromino_transform(MemorySegment tetrion, MemorySegment out_type, MemorySegment out_rotation, MemorySegment out_position) {
