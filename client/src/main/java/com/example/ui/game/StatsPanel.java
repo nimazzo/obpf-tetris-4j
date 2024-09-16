@@ -1,4 +1,4 @@
-package com.example.ui;
+package com.example.ui.game;
 
 import com.example.simulation.Stats;
 import javafx.application.Platform;
@@ -11,8 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-import static com.example.ui.Colors.CLEAR_COLOR;
 import static com.example.ui.TextFactory.createText;
+import static com.example.ui.game.Colors.CLEAR_COLOR;
 
 public class StatsPanel extends GridPane {
 

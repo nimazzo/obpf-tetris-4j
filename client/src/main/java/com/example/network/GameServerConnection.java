@@ -22,16 +22,18 @@ public class GameServerConnection implements ServerConnection {
 
     private final AtomicBoolean running = new AtomicBoolean(true);
 
+    private final String host;
     private final int gamePort;
 
-    public GameServerConnection(int gamePort) {
+    public GameServerConnection(String host, int gamePort) {
+        this.host = host;
         this.gamePort = gamePort;
     }
 
     @Override
     public void connect() {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            socket = new Socket("localhost", gamePort);
+            socket = new Socket(host, gamePort);
             System.out.println("Connected to server");
             executor.execute(this::readServerMessages);
             executor.execute(this::sendHeartbeats);

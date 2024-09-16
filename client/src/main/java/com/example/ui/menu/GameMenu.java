@@ -1,8 +1,6 @@
 package com.example.ui.menu;
 
-import com.example.simulation.GameMode;
 import com.example.state.AppState;
-import com.example.state.GameState;
 import com.example.ui.AppScene;
 import com.example.ui.TextFactory;
 import com.example.ui.game.Colors;
@@ -15,12 +13,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-public class MainMenu extends StackPane implements AppScene {
+public class GameMenu extends StackPane implements AppScene {
 
-    private final Button singlePlayerButton;
-    private final Button multiPlayerButton;
+    private final Button returnToGameButton;
+    private final Button leaveGameButton;
 
-    public MainMenu() {
+    public GameMenu() {
         setPrefSize(750, 600);
 
         var content = new VBox(10);
@@ -34,20 +32,20 @@ public class MainMenu extends StackPane implements AppScene {
 
         content.setMaxWidth(USE_PREF_SIZE);
 
-        var title = TextFactory.createText("TetrisJ", FontWeight.BOLD, 64, Color.ORANGE, 4, Color.BLACK);
+        var title = TextFactory.createText("Main Menu", FontWeight.BOLD, 64, Color.ORANGE, 4, Color.BLACK);
         VBox.setMargin(title, new Insets(0, 0, 20, 0));
 
-        singlePlayerButton = new Button("Single Player");
-        singlePlayerButton.setFont(Font.font(15));
+        returnToGameButton = new Button("Return to Game");
+        returnToGameButton.setFont(Font.font(15));
 
-        multiPlayerButton = new Button("Multi Player");
-        multiPlayerButton.setFont(Font.font(15));
+        leaveGameButton = new Button("Leave Game");
+        leaveGameButton.setFont(Font.font(15));
 
-        var buttonBox = new VBox(15, singlePlayerButton, multiPlayerButton);
+        var buttonBox = new VBox(15, returnToGameButton, leaveGameButton);
         buttonBox.setPrefWidth(200);
         buttonBox.setMaxWidth(USE_PREF_SIZE);
-        singlePlayerButton.setMaxWidth(Double.MAX_VALUE);
-        multiPlayerButton.setMaxWidth(Double.MAX_VALUE);
+        returnToGameButton.setMaxWidth(Double.MAX_VALUE);
+        leaveGameButton.setMaxWidth(Double.MAX_VALUE);
         buttonBox.setAlignment(Pos.TOP_CENTER);
 
         content.getChildren().addAll(title, buttonBox);
@@ -55,21 +53,17 @@ public class MainMenu extends StackPane implements AppScene {
         getChildren().add(content);
     }
 
-    public void setOnSinglePlayerButtonClicked(Runnable action) {
-        singlePlayerButton.setOnAction(_ -> {
-            GameState.INSTANCE.setGameMode(GameMode.SINGLEPLAYER);
-            GameState.INSTANCE.setNumberOfPlayers(1);
-            action.run();
-        });
+    public void setOnReturnToGameButtonClicked(Runnable action) {
+        returnToGameButton.setOnAction(_ -> action.run());
     }
 
-    public void setOnMultiPlayerButtonClicked(Runnable action) {
-        multiPlayerButton.setOnAction(_ -> action.run());
+    public void setOnLeaveGameButtonClicked(Runnable action) {
+        leaveGameButton.setOnAction(_ -> action.run());
     }
 
     @Override
     public AppState getState() {
-        return AppState.MAIN_MENU;
+        return AppState.GAME_MENU;
     }
 
     @Override

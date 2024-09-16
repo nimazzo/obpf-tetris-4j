@@ -1,4 +1,4 @@
-package com.example.ui;
+package com.example.ui.game;
 
 import com.example.simulation.Tetromino;
 import javafx.scene.canvas.Canvas;
@@ -8,8 +8,8 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 
-import static com.example.ui.Colors.COLORS;
-import static com.example.ui.Colors.GHOST_COLORS;
+import static com.example.ui.game.Colors.COLORS;
+import static com.example.ui.game.Colors.GHOST_COLORS;
 
 public class PiecePreview extends StackPane {
     private static final int DEFAULT_PIXELS_PER_CELL = 20;
