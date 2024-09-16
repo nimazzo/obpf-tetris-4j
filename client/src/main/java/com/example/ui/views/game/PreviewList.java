@@ -1,4 +1,4 @@
-package com.example.ui.game;
+package com.example.ui.views.game;
 
 import com.example.simulation.Tetromino;
 import javafx.geometry.Insets;

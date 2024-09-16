@@ -1,4 +1,4 @@
-package com.example.ui.game;
+package com.example.ui.views.game;
 
 import javafx.scene.paint.Color;
 

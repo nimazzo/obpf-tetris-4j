@@ -1,6 +1,6 @@
 package com.example.simulation;
 
-import com.example.ui.game.Tetrion;
+import com.example.ui.views.game.Tetrion;
 
 import java.lang.foreign.MemorySegment;
 

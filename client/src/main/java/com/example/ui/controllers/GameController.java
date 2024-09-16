@@ -1,12 +1,13 @@
-package com.example.ui.game;
+package com.example.ui.controllers;
 
+import com.example.concurrent.Worker;
 import com.example.network.GameServerConnection;
 import com.example.network.NOOPGameServerConnection;
 import com.example.network.ServerConnection;
 import com.example.simulation.GameMode;
 import com.example.simulation.Simulator;
 import com.example.state.GameState;
-import com.example.worker.Worker;
+import com.example.ui.views.game.GameScene;
 import javafx.scene.input.KeyEvent;
 
 public class GameController {

@@ -1,4 +1,4 @@
-package com.example.ui.lobby;
+package com.example.ui.views.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

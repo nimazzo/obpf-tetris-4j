@@ -1,9 +1,9 @@
-package com.example.ui.menu;
+package com.example.ui.views.menu;
 
 import com.example.state.AppState;
 import com.example.ui.AppScene;
 import com.example.ui.TextFactory;
-import com.example.ui.game.Colors;
+import com.example.ui.views.game.Colors;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -19,7 +19,7 @@ public class GameMenu extends StackPane implements AppScene {
     private final Button leaveGameButton;
 
     public GameMenu() {
-        setPrefSize(750, 600);
+        setPrefSize(1000, 700);
 
         var content = new VBox(10);
 

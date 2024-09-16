@@ -1,7 +1,8 @@
-package com.example.ui;
+package com.example.ui.controllers;
 
+import com.example.state.AppState;
 import com.example.state.GameState;
-import com.example.ui.game.GameController;
+import com.example.ui.SceneManager;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -39,6 +40,8 @@ public class RootController {
         if (GameState.INSTANCE.isRunning()) {
             gameController.togglePause();
             sceneManager.toggleGameMenu();
+        } else {
+            sceneManager.switchAppState(AppState.MAIN_MENU);
         }
     }
 }

@@ -1,13 +1,14 @@
 package com.example;
 
 import com.example.state.AppState;
-import com.example.ui.RootController;
 import com.example.ui.SceneManager;
-import com.example.ui.game.GameController;
-import com.example.ui.game.GameScene;
-import com.example.ui.lobby.LobbyScene;
-import com.example.ui.menu.GameMenu;
-import com.example.ui.menu.MainMenu;
+import com.example.ui.controllers.GameController;
+import com.example.ui.controllers.LobbyController;
+import com.example.ui.controllers.RootController;
+import com.example.ui.views.game.GameScene;
+import com.example.ui.views.menu.GameMenu;
+import com.example.ui.views.menu.LobbyMenu;
+import com.example.ui.views.menu.MainMenu;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -30,22 +31,27 @@ public class App extends Application {
 
         var mainMenu = new MainMenu();
         var gameScene = new GameScene();
-        var lobbyScene = new LobbyScene();
+        var lobbyMenu = new LobbyMenu();
         var gameMenu = new GameMenu();
 
         var gameController = new GameController(gameScene);
         var rootController = new RootController(gameController, sceneManager);
+        var lobbyController = new LobbyController(lobbyMenu);
 
         sceneManager.registerScene(gameScene);
         sceneManager.registerScene(mainMenu);
-        sceneManager.registerScene(lobbyScene);
+        sceneManager.registerScene(lobbyMenu);
         sceneManager.registerScene(gameMenu);
 
         mainMenu.setOnSinglePlayerButtonClicked(() -> {
             rootController.startNewSinglePlayerGame();
             sceneManager.switchAppState(AppState.GAME);
         });
-        mainMenu.setOnMultiPlayerButtonClicked(() -> sceneManager.switchAppState(AppState.LOBBIES));
+
+        mainMenu.setOnMultiPlayerButtonClicked(() -> {
+            lobbyController.fetchLobbies();
+            sceneManager.switchAppState(AppState.LOBBIES);
+        });
 
         gameMenu.setOnReturnToGameButtonClicked(() -> {
             sceneManager.switchAppState(AppState.GAME);
@@ -56,6 +62,9 @@ public class App extends Application {
             sceneManager.switchAppState(AppState.MAIN_MENU);
             gameController.stopSimulating();
         });
+
+        lobbyMenu.setOnReturnToMainMenuButtonClicked(() -> sceneManager.switchAppState(AppState.MAIN_MENU));
+        lobbyMenu.setOnUpdateButtonClicked(lobbyController::fetchLobbies);
 
         sceneManager.switchAppState(AppState.MAIN_MENU);
 

@@ -1,11 +1,11 @@
-package com.example.ui.menu;
+package com.example.ui.views.menu;
 
 import com.example.simulation.GameMode;
 import com.example.state.AppState;
 import com.example.state.GameState;
 import com.example.ui.AppScene;
 import com.example.ui.TextFactory;
-import com.example.ui.game.Colors;
+import com.example.ui.views.game.Colors;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -21,7 +21,7 @@ public class MainMenu extends StackPane implements AppScene {
     private final Button multiPlayerButton;
 
     public MainMenu() {
-        setPrefSize(750, 600);
+        setPrefSize(1000, 700);
 
         var content = new VBox(10);
 

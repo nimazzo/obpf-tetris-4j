@@ -1,8 +1,11 @@
-package com.example.worker;
+package com.example.concurrent;
 
+import com.example.ui.ErrorMessages;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
@@ -13,7 +16,9 @@ public class Worker<T> extends Service<T> {
     private Worker(Runnable runnable) {
         setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         setOnFailed(_ -> {
-            throw new RuntimeException(getException());
+            var sw = new StringWriter();
+            getException().printStackTrace(new PrintWriter(sw));
+            ErrorMessages.showErrorMessage(getException().getMessage(), sw.toString());
         });
         this.callable = () -> {
             runnable.run();
@@ -21,8 +26,14 @@ public class Worker<T> extends Service<T> {
         };
     }
 
-    public static void execute(Runnable runnable) {
-        new Worker<>(runnable).start();
+    public static void execute(Executable executable) {
+        new Worker<>(() -> {
+            try {
+                executable.execute();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     @Override
