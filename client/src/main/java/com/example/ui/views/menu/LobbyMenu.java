@@ -31,7 +31,6 @@ public class LobbyMenu extends StackPane implements AppScene {
     private final Button createButton;
     private final Button updateButton;
 
-    private final TableView<Lobby> table;
     private final ObservableList<Lobby> lobbies = FXCollections.observableArrayList();
 
     public LobbyMenu() {
@@ -46,7 +45,7 @@ public class LobbyMenu extends StackPane implements AppScene {
         var title = TextFactory.createText("Lobby Menu", FontWeight.BOLD, 64, Color.ORANGE, 4, Color.BLACK);
         VBox.setMargin(title, new Insets(40, 0, 0, 0));
 
-        table = createTable();
+        var table = createTable();
 
         backToMainMenu = new Button("Return to Main Menu");
         var separator = new Separator(Orientation.HORIZONTAL);

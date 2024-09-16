@@ -7,7 +7,11 @@ module com.example.client {
     requires spring.jcl;
     requires java.logging;
 
-    exports com.example to javafx.graphics;
+    exports com.example;
+    exports com.example.simulation;
+    exports com.example.state;
+    exports com.example.network;
+
     exports com.example.ui.views.game to com.fasterxml.jackson.databind;
     opens com.example.ui.controllers to com.fasterxml.jackson.databind;
 }

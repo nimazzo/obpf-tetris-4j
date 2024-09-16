@@ -7,7 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class NOOPGameServerConnection implements ServerConnection {
 
-    BlockingQueue<ServerMessage> messageQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<ServerMessage> messageQueue = new LinkedBlockingQueue<>();
 
     @Override
     public void connect() {
