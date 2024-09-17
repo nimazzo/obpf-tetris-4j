@@ -1,6 +1,7 @@
 package com.example.concurrent;
 
 import com.example.ui.ErrorMessages;
+import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -27,7 +28,7 @@ public class Worker<T> extends Service<T> {
         };
     }
 
-    public static Worker<?> execute(Executable executable) {
+    public static void execute(Executable executable) {
         var worker = new Worker<>(() -> {
             try {
                 executable.execute();
@@ -35,8 +36,7 @@ public class Worker<T> extends Service<T> {
                 throw new RuntimeException(e);
             }
         });
-        worker.start();
-        return worker;
+        Platform.runLater(worker::start);
     }
 
     @Override

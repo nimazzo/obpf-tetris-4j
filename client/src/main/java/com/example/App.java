@@ -48,7 +48,7 @@ public class App extends Application {
         sceneManager.registerScene(gameMenu);
 
         mainMenu.setOnSinglePlayerButtonClicked(gameController::startNewSinglePlayerGame);
-        mainMenu.setOnMultiPlayerButtonClicked(lobbyController::fetchLobbies);
+        mainMenu.setOnMultiPlayerButtonClicked(lobbyController::goToLobbyMenu);
         gameMenu.setOnReturnToGameButtonClicked(gameController::returnToGame);
         gameMenu.setOnLeaveGameButtonClicked(rootController::leaveGame);
 

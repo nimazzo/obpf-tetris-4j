@@ -65,8 +65,8 @@ public class LobbyController {
         fetchCsrfToken();
     }
 
-    private Worker<?> fetchCsrfToken() {
-        return Worker.execute(() -> {
+    private void fetchCsrfToken() {
+        Worker.execute(() -> {
             var response = restClient
                     .get()
                     .uri("csrf")
@@ -110,8 +110,6 @@ public class LobbyController {
 
     public void fetchLobbies() {
         if (isAuthenticated()) {
-            Platform.runLater(() -> sceneManager.switchAppState(AppState.LOBBIES));
-
             Worker.execute(() -> {
                 var response = restClient
                         .get()
@@ -146,7 +144,7 @@ public class LobbyController {
 
     private boolean isAuthenticated() {
         if (csrfToken == null) {
-            fetchCsrfToken().await();
+            fetchCsrfToken();
         }
 
         if (encodedCredentials == null) {
@@ -191,6 +189,11 @@ public class LobbyController {
 
     public SimpleObjectProperty<UserInfo> userInfoProperty() {
         return userInfo;
+    }
+
+    public void goToLobbyMenu() {
+        sceneManager.switchAppState(AppState.LOBBIES);
+        fetchLobbies();
     }
 
     static class CookieInterceptor implements ClientHttpRequestInterceptor {
