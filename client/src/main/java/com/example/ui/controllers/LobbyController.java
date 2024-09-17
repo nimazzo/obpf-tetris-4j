@@ -11,6 +11,7 @@ import com.example.ui.views.menu.LobbyMenu;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class LobbyController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private UserInfo userInfo;
+    private final SimpleObjectProperty<UserInfo> userInfo = new SimpleObjectProperty<>(null);
     private String encodedCredentials;
 
     public LobbyController(LobbyMenu lobbyMenu, SceneManager sceneManager) {
@@ -108,14 +109,18 @@ public class LobbyController {
 
     private boolean isAuthenticated() {
         if (encodedCredentials == null) {
-            encodedCredentials = lobbyMenu.askForCredentials();
-
-            if (encodedCredentials != null) {
-                userInfo = tryFetchUserInfo();
-            }
-            return userInfo != null;
+            return login() != null;
         }
         return true;
+    }
+
+    public UserInfo login() {
+        encodedCredentials = lobbyMenu.askForCredentials();
+
+        if (encodedCredentials != null) {
+            userInfo.set(tryFetchUserInfo());
+        }
+        return userInfo.get();
     }
 
     private UserInfo tryFetchUserInfo() {
@@ -132,6 +137,15 @@ public class LobbyController {
 
     public void returnToMainMenu() {
         sceneManager.switchAppState(AppState.MAIN_MENU);
+    }
+
+    public void logout() {
+        userInfo.set(null);
+        encodedCredentials = null;
+    }
+
+    public SimpleObjectProperty<UserInfo> userInfoProperty() {
+        return userInfo;
     }
 
     static class CookieInterceptor implements ClientHttpRequestInterceptor {

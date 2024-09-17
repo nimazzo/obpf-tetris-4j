@@ -32,7 +32,7 @@ public class GameMenu extends StackPane implements AppScene {
 
         content.setMaxWidth(USE_PREF_SIZE);
 
-        var title = TextFactory.createText("Main Menu", FontWeight.BOLD, 64, Color.ORANGE, 4, Color.BLACK);
+        var title = TextFactory.createText("Game Menu", FontWeight.BOLD, 64, Color.ORANGE, 4, Color.BLACK);
         VBox.setMargin(title, new Insets(0, 0, 20, 0));
 
         returnToGameButton = new Button("Return to Game");
@@ -69,5 +69,10 @@ public class GameMenu extends StackPane implements AppScene {
     @Override
     public Node getNode() {
         return this;
+    }
+
+    @Override
+    public void onEnter() {
+        returnToGameButton.requestFocus();
     }
 }

@@ -28,13 +28,15 @@ public class RootController {
     public void onKeyPressed(KeyEvent e) {
         if (e.getCode() == KeyCode.ESCAPE) {
             handleEscapePressed();
-        } else {
+        } else if (GameState.INSTANCE.isRunning()) {
             gameController.onKeyPressed(e);
         }
     }
 
     public void onKeyReleased(KeyEvent e) {
-        gameController.onKeyReleased(e);
+        if (GameState.INSTANCE.isRunning()) {
+            gameController.onKeyReleased(e);
+        }
     }
 
     private void handleEscapePressed() {
