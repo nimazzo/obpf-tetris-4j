@@ -16,6 +16,7 @@ public class Worker<T> extends Service<T> {
     private Worker(Runnable runnable) {
         setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         setOnFailed(_ -> {
+            getException().printStackTrace();
             var sw = new StringWriter();
             getException().printStackTrace(new PrintWriter(sw));
             ErrorMessages.showErrorMessage(getException().getMessage(), sw.toString());

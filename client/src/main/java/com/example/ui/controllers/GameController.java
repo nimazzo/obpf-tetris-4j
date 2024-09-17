@@ -6,7 +6,9 @@ import com.example.network.NOOPGameServerConnection;
 import com.example.network.ServerConnection;
 import com.example.simulation.GameMode;
 import com.example.simulation.Simulator;
+import com.example.state.AppState;
 import com.example.state.GameState;
+import com.example.ui.SceneManager;
 import com.example.ui.views.game.GameScene;
 import javafx.scene.input.KeyEvent;
 
@@ -14,13 +16,18 @@ public class GameController {
 
     private Simulator simulator;
     private final GameScene gameScene;
+    private final SceneManager sceneManager;
 
-    public GameController(GameScene gameScene) {
+    public GameController(GameScene gameScene, SceneManager sceneManager) {
         this.gameScene = gameScene;
+        this.sceneManager = sceneManager;
     }
 
     public void startNewSinglePlayerGame() {
+        GameState.INSTANCE.setGameMode(GameMode.SINGLEPLAYER);
+        GameState.INSTANCE.setNumberOfPlayers(1);
         GameState.INSTANCE.setIsRunning(true);
+
         gameScene.init();
         simulator = new Simulator(gameScene.getTetrions());
         Worker.execute(() -> simulator.startSimulating(getConnection()));
@@ -74,5 +81,15 @@ public class GameController {
         if (isSinglePlayer) {
             simulator.togglePause();
         }
+    }
+
+    public void returnToGame() {
+        sceneManager.switchAppState(AppState.GAME);
+        togglePause();
+    }
+
+    public void leaveGame() {
+        sceneManager.switchAppState(AppState.MAIN_MENU);
+        stopSimulating();
     }
 }

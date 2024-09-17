@@ -7,6 +7,7 @@ import com.example.ui.AppScene;
 import com.example.ui.TextFactory;
 import com.example.ui.views.game.Colors;
 import com.example.ui.views.game.CreateLobbyDialog;
+import com.example.ui.views.game.LoginDialog;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -108,6 +109,11 @@ public class LobbyMenu extends StackPane implements AppScene {
         var dialog = new CreateLobbyDialog();
         dialog.showAndWait()
                 .ifPresent(lobbyCreationRequest -> createLobbyCallback.accept(lobbyCreationRequest));
+    }
+
+    public String askForCredentials() {
+        var dialog = new LoginDialog();
+        return dialog.showAndWait().orElse(null);
     }
 
     public void setOnJoinLobbyButtonClicked(Runnable action) {

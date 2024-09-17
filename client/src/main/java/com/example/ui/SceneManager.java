@@ -23,6 +23,10 @@ public class SceneManager {
     }
 
     public void switchAppState(AppState newState) {
+        if (newState == activeState) {
+            return;
+        }
+
         log.info("Switching from state " + activeState + " to " + newState);
 
         var previousScene = scenes.get(activeState);
@@ -31,6 +35,10 @@ public class SceneManager {
         }
 
         var newScene = scenes.get(newState);
+        if (!newScene.canEnter()) {
+            return;
+        }
+
         newScene.onEnter();
 
         content.getChildren().clear();

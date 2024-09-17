@@ -18,6 +18,7 @@ public class RootController {
 
     public void startNewSinglePlayerGame() {
         gameController.startNewSinglePlayerGame();
+        sceneManager.switchAppState(AppState.GAME);
     }
 
     public void onApplicationClose() {

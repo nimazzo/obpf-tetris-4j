@@ -3,22 +3,26 @@ package com.example.ui.controllers;
 import com.example.concurrent.Worker;
 import com.example.daos.CsrfToken;
 import com.example.daos.LobbyCreationRequest;
+import com.example.daos.UserInfo;
+import com.example.state.AppState;
 import com.example.ui.ErrorMessages;
+import com.example.ui.SceneManager;
 import com.example.ui.views.menu.LobbyMenu;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.application.Platform;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.net.HttpCookie;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,23 +31,28 @@ public class LobbyController {
 
     private final RestClient restClient;
     private final LobbyMenu lobbyMenu;
+    private final SceneManager sceneManager;
 
     private CsrfToken csrfToken;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public LobbyController(LobbyMenu lobbyMenu) {
-        this.lobbyMenu = lobbyMenu;
+    private UserInfo userInfo;
+    private String encodedCredentials;
 
-        var encodedAuth = Base64.getEncoder().encodeToString("user:user".getBytes(StandardCharsets.UTF_8));
-        var jacksonMessageConverter =
-                new MappingJackson2HttpMessageConverter();
+    public LobbyController(LobbyMenu lobbyMenu, SceneManager sceneManager) {
+        this.lobbyMenu = lobbyMenu;
+        this.sceneManager = sceneManager;
+
         this.restClient = RestClient.builder()
-                .requestInterceptor(new CookieInterceptor())
+                .requestInterceptors(interceptors -> {
+                    interceptors.add(new CookieInterceptor());
+                    interceptors.add(new AuthInterceptor());
+                })
                 .baseUrl("http://localhost:8080/")
-                .defaultHeader("Authorization", "Basic " + encodedAuth)
                 .defaultHeader("Content-Type", "application/json")
-                .messageConverters(converters -> converters.add(jacksonMessageConverter))
+                .defaultStatusHandler(new ErrorResponseHandler())
+                .messageConverters(converters -> converters.add(new MappingJackson2HttpMessageConverter()))
                 .build();
 
         fetchCsrfToken();
@@ -62,37 +71,67 @@ public class LobbyController {
     }
 
     public void fetchLobbies() {
-        Worker.execute(() -> {
-            var response = restClient
-                    .get()
-                    .uri("lobby")
-                    .retrieve()
-                    .toEntity(String.class);
+        if (isAuthenticated()) {
+            Platform.runLater(() -> sceneManager.switchAppState(AppState.LOBBIES));
 
-            var jsonTree = objectMapper.readTree(response.getBody());
-            var contentNode = jsonTree.get("content");
+            Worker.execute(() -> {
+                var response = restClient
+                        .get()
+                        .uri("lobby")
+                        .retrieve()
+                        .toEntity(String.class);
 
-            lobbyMenu.setLobbies(objectMapper.readValue(contentNode.toString(), new TypeReference<>() {
-            }));
-        });
+                var jsonTree = objectMapper.readTree(response.getBody());
+                var contentNode = jsonTree.get("content");
+
+                lobbyMenu.setLobbies(objectMapper.readValue(contentNode.toString(), new TypeReference<>() {
+                }));
+            });
+        }
     }
 
     public void createNewLobby(LobbyCreationRequest request) {
-        Worker.execute(() -> {
-            var response = restClient
-                    .post()
-                    .uri("lobby/create")
-                    .header(csrfToken.headerName(), csrfToken.token())
-                    .body(objectMapper.writeValueAsString(request))
-                    .retrieve()
-                    .toEntity(String.class);
+        if (isAuthenticated()) {
+            Worker.execute(() -> {
+                restClient
+                        .post()
+                        .uri("lobby/create")
+                        .header(csrfToken.headerName(), csrfToken.token())
+                        .body(objectMapper.writeValueAsString(request))
+                        .retrieve()
+                        .toEntity(String.class);
 
-            if (response.getStatusCode().isError()) {
-                ErrorMessages.showErrorMessage("HTTP Error: " + response.getStatusCode(), response.getBody());
+                fetchLobbies();
+            });
+        }
+    }
+
+    private boolean isAuthenticated() {
+        if (encodedCredentials == null) {
+            encodedCredentials = lobbyMenu.askForCredentials();
+
+            if (encodedCredentials != null) {
+                userInfo = tryFetchUserInfo();
             }
+            return userInfo != null;
+        }
+        return true;
+    }
 
-            fetchLobbies();
-        });
+    private UserInfo tryFetchUserInfo() {
+        var response = restClient.get()
+                .uri("/user")
+                .retrieve()
+                .toEntity(UserInfo.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        }
+        return null;
+    }
+
+    public void returnToMainMenu() {
+        sceneManager.switchAppState(AppState.MAIN_MENU);
     }
 
     static class CookieInterceptor implements ClientHttpRequestInterceptor {
@@ -115,6 +154,37 @@ public class LobbyController {
                 }
             }
             return response;
+        }
+    }
+
+    private class AuthInterceptor implements ClientHttpRequestInterceptor {
+
+        @Override
+        public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+            var headers = request.getHeaders();
+            if (encodedCredentials != null) {
+                headers.setBasicAuth(encodedCredentials);
+            }
+            return execution.execute(request, body);
+        }
+    }
+
+    private class ErrorResponseHandler implements ResponseErrorHandler {
+
+        @Override
+        public boolean hasError(ClientHttpResponse response) throws IOException {
+            return response.getStatusCode().isError();
+        }
+
+        @Override
+        public void handleError(ClientHttpResponse response) throws IOException {
+            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                ErrorMessages.showErrorMessage("Unauthorized", "Credentials are invalid");
+                encodedCredentials = null;
+                Platform.runLater(() -> sceneManager.switchAppState(AppState.MAIN_MENU));
+            } else {
+                ErrorMessages.showErrorMessage("HTTP Error: " + response.getStatusCode(), "" + response.getBody());
+            }
         }
     }
 }

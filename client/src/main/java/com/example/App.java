@@ -34,36 +34,21 @@ public class App extends Application {
         var lobbyMenu = new LobbyMenu();
         var gameMenu = new GameMenu();
 
-        var gameController = new GameController(gameScene);
+        var gameController = new GameController(gameScene, sceneManager);
         var rootController = new RootController(gameController, sceneManager);
-        var lobbyController = new LobbyController(lobbyMenu);
+        var lobbyController = new LobbyController(lobbyMenu, sceneManager);
 
         sceneManager.registerScene(gameScene);
         sceneManager.registerScene(mainMenu);
         sceneManager.registerScene(lobbyMenu);
         sceneManager.registerScene(gameMenu);
 
-        mainMenu.setOnSinglePlayerButtonClicked(() -> {
-            rootController.startNewSinglePlayerGame();
-            sceneManager.switchAppState(AppState.GAME);
-        });
+        mainMenu.setOnSinglePlayerButtonClicked(rootController::startNewSinglePlayerGame);
+        mainMenu.setOnMultiPlayerButtonClicked(lobbyController::fetchLobbies);
+        gameMenu.setOnReturnToGameButtonClicked(gameController::returnToGame);
+        gameMenu.setOnLeaveGameButtonClicked(gameController::leaveGame);
 
-        mainMenu.setOnMultiPlayerButtonClicked(() -> {
-            lobbyController.fetchLobbies();
-            sceneManager.switchAppState(AppState.LOBBIES);
-        });
-
-        gameMenu.setOnReturnToGameButtonClicked(() -> {
-            sceneManager.switchAppState(AppState.GAME);
-            gameController.togglePause();
-        });
-
-        gameMenu.setOnLeaveGameButtonClicked(() -> {
-            sceneManager.switchAppState(AppState.MAIN_MENU);
-            gameController.stopSimulating();
-        });
-
-        lobbyMenu.setOnReturnToMainMenuButtonClicked(() -> sceneManager.switchAppState(AppState.MAIN_MENU));
+        lobbyMenu.setOnReturnToMainMenuButtonClicked(lobbyController::returnToMainMenu);
         lobbyMenu.setOnUpdateButtonClicked(lobbyController::fetchLobbies);
         lobbyMenu.setOnCreateLobbyRequest(lobbyController::createNewLobby);
 

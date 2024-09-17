@@ -1,8 +1,6 @@
 package com.example.ui.views.menu;
 
-import com.example.simulation.GameMode;
 import com.example.state.AppState;
-import com.example.state.GameState;
 import com.example.ui.AppScene;
 import com.example.ui.TextFactory;
 import com.example.ui.views.game.Colors;
@@ -56,11 +54,7 @@ public class MainMenu extends StackPane implements AppScene {
     }
 
     public void setOnSinglePlayerButtonClicked(Runnable action) {
-        singlePlayerButton.setOnAction(_ -> {
-            GameState.INSTANCE.setGameMode(GameMode.SINGLEPLAYER);
-            GameState.INSTANCE.setNumberOfPlayers(1);
-            action.run();
-        });
+        singlePlayerButton.setOnAction(_ -> action.run());
     }
 
     public void setOnMultiPlayerButtonClicked(Runnable action) {

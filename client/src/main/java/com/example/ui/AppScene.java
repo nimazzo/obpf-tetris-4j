@@ -13,4 +13,8 @@ public interface AppScene {
 
     default void onExit() {
     }
+
+    default boolean canEnter() {
+        return true;
+    }
 }
