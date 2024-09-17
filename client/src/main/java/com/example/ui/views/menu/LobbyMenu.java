@@ -1,10 +1,12 @@
 package com.example.ui.views.menu;
 
+import com.example.daos.Lobby;
+import com.example.daos.LobbyCreationRequest;
 import com.example.state.AppState;
 import com.example.ui.AppScene;
 import com.example.ui.TextFactory;
 import com.example.ui.views.game.Colors;
-import com.example.ui.views.game.Lobby;
+import com.example.ui.views.game.CreateLobbyDialog;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -22,16 +24,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class LobbyMenu extends StackPane implements AppScene {
 
     private final Button backToMainMenu;
     private final Button joinButton;
-    private final Button createButton;
     private final Button updateButton;
 
     private final ObservableList<Lobby> lobbies = FXCollections.observableArrayList();
+    private Consumer<LobbyCreationRequest> createLobbyCallback = _ -> {
+    };
 
     public LobbyMenu() {
         setPrefSize(1000, 700);
@@ -51,7 +55,9 @@ public class LobbyMenu extends StackPane implements AppScene {
         var separator = new Separator(Orientation.HORIZONTAL);
         separator.setVisible(false);
         joinButton = new Button("Join Lobby");
-        createButton = new Button("Create New Lobby");
+        var createButton = new Button("Create New Lobby");
+        createButton.setOnAction(_ -> openCreateLobbyDialog());
+
         updateButton = new Button("Update");
         var hbox = new HBox(10, backToMainMenu, separator, joinButton, createButton);
         hbox.setPadding(new Insets(7, 0, 7, 0));
@@ -98,8 +104,10 @@ public class LobbyMenu extends StackPane implements AppScene {
         updateButton.setOnAction(_ -> action.run());
     }
 
-    public void setOnCreateLobbyButtonClicked(Runnable action) {
-        createButton.setOnAction(_ -> action.run());
+    public void openCreateLobbyDialog() {
+        var dialog = new CreateLobbyDialog();
+        dialog.showAndWait()
+                .ifPresent(lobbyCreationRequest -> createLobbyCallback.accept(lobbyCreationRequest));
     }
 
     public void setOnJoinLobbyButtonClicked(Runnable action) {
@@ -118,5 +126,9 @@ public class LobbyMenu extends StackPane implements AppScene {
     @Override
     public Node getNode() {
         return this;
+    }
+
+    public void setOnCreateLobbyRequest(Consumer<LobbyCreationRequest> clb) {
+        this.createLobbyCallback = clb;
     }
 }

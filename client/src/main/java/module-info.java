@@ -11,6 +11,7 @@ module com.example.client {
     exports com.example.simulation;
     exports com.example.state;
     exports com.example.network;
+    exports com.example.daos;
 
     exports com.example.ui.views.game to com.fasterxml.jackson.databind;
     opens com.example.ui.controllers to com.fasterxml.jackson.databind;

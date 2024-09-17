@@ -65,6 +65,7 @@ public class App extends Application {
 
         lobbyMenu.setOnReturnToMainMenuButtonClicked(() -> sceneManager.switchAppState(AppState.MAIN_MENU));
         lobbyMenu.setOnUpdateButtonClicked(lobbyController::fetchLobbies);
+        lobbyMenu.setOnCreateLobbyRequest(lobbyController::createNewLobby);
 
         sceneManager.switchAppState(AppState.MAIN_MENU);
 

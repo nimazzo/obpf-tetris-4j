@@ -1,4 +1,4 @@
-package com.example.ui.views.game;
+package com.example.daos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
