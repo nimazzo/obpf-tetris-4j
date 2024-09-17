@@ -28,7 +28,7 @@ public class SceneManager {
             return;
         }
 
-        log.info("Switching from state " + activeState + " to " + newState);
+        log.info("Switching from state " + activeState.get() + " to " + newState);
 
         var previousScene = scenes.get(activeState.get());
         if (previousScene != null) {

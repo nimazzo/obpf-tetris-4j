@@ -37,8 +37,8 @@ public class App extends Application {
         var gameMenu = new GameMenu();
 
         var gameController = new GameController(gameScene, sceneManager);
-        var rootController = new RootController(gameController, sceneManager);
-        var lobbyController = new LobbyController(lobbyMenu, sceneManager);
+        var lobbyController = new LobbyController(lobbyMenu, sceneManager, gameController);
+        var rootController = new RootController(gameController, lobbyController, sceneManager);
 
         var loginHeader = new LoginHeader(lobbyController.userInfoProperty());
 
@@ -47,14 +47,15 @@ public class App extends Application {
         sceneManager.registerScene(lobbyMenu);
         sceneManager.registerScene(gameMenu);
 
-        mainMenu.setOnSinglePlayerButtonClicked(rootController::startNewSinglePlayerGame);
+        mainMenu.setOnSinglePlayerButtonClicked(gameController::startNewSinglePlayerGame);
         mainMenu.setOnMultiPlayerButtonClicked(lobbyController::fetchLobbies);
         gameMenu.setOnReturnToGameButtonClicked(gameController::returnToGame);
-        gameMenu.setOnLeaveGameButtonClicked(gameController::leaveGame);
+        gameMenu.setOnLeaveGameButtonClicked(rootController::leaveGame);
 
         lobbyMenu.setOnReturnToMainMenuButtonClicked(lobbyController::returnToMainMenu);
         lobbyMenu.setOnUpdateButtonClicked(lobbyController::fetchLobbies);
         lobbyMenu.setOnCreateLobbyRequest(lobbyController::createNewLobby);
+        lobbyMenu.setOnJoinLobbyButtonClicked(lobbyController::joinLobby);
 
         loginHeader.visibleProperty().bind(sceneManager.activeStateProperty().isNotEqualTo(AppState.GAME));
         loginHeader.setOnLogin(lobbyController::login);

@@ -58,6 +58,7 @@ public class LobbyMenu extends StackPane implements AppScene {
         var separator = new Separator(Orientation.HORIZONTAL);
         separator.setVisible(false);
         joinButton = new Button("Join Lobby");
+        joinButton.disableProperty().bind(table.getSelectionModel().selectedItemProperty().isNull());
         var createButton = new Button("Create New Lobby");
         createButton.setOnAction(_ -> openCreateLobbyDialog());
 
@@ -118,8 +119,8 @@ public class LobbyMenu extends StackPane implements AppScene {
         return dialog.showAndWait().orElse(null);
     }
 
-    public void setOnJoinLobbyButtonClicked(Runnable action) {
-        joinButton.setOnAction(_ -> action.run());
+    public void setOnJoinLobbyButtonClicked(Consumer<Lobby> action) {
+        joinButton.setOnAction(_ -> action.accept(table.getSelectionModel().getSelectedItem()));
     }
 
     public void setLobbies(List<Lobby> lobbies) {

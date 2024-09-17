@@ -2,9 +2,13 @@ package com.example.ui.controllers;
 
 import com.example.concurrent.Worker;
 import com.example.daos.CsrfToken;
+import com.example.daos.Lobby;
 import com.example.daos.LobbyCreationRequest;
 import com.example.daos.UserInfo;
+import com.example.network.ConnectionInfo;
+import com.example.simulation.GameMode;
 import com.example.state.AppState;
+import com.example.state.GameState;
 import com.example.ui.ErrorMessages;
 import com.example.ui.SceneManager;
 import com.example.ui.views.menu.LobbyMenu;
@@ -33,6 +37,7 @@ public class LobbyController {
     private final RestClient restClient;
     private final LobbyMenu lobbyMenu;
     private final SceneManager sceneManager;
+    private final GameController gameController;
 
     private CsrfToken csrfToken;
 
@@ -41,9 +46,10 @@ public class LobbyController {
     private final SimpleObjectProperty<UserInfo> userInfo = new SimpleObjectProperty<>(null);
     private String encodedCredentials;
 
-    public LobbyController(LobbyMenu lobbyMenu, SceneManager sceneManager) {
+    public LobbyController(LobbyMenu lobbyMenu, SceneManager sceneManager, GameController gameController) {
         this.lobbyMenu = lobbyMenu;
         this.sceneManager = sceneManager;
+        this.gameController = gameController;
 
         this.restClient = RestClient.builder()
                 .requestInterceptors(interceptors -> {
@@ -59,8 +65,8 @@ public class LobbyController {
         fetchCsrfToken();
     }
 
-    private void fetchCsrfToken() {
-        Worker.execute(() -> {
+    private Worker<?> fetchCsrfToken() {
+        return Worker.execute(() -> {
             var response = restClient
                     .get()
                     .uri("csrf")
@@ -69,6 +75,37 @@ public class LobbyController {
 
             csrfToken = Objects.requireNonNull(response.getBody());
         });
+    }
+
+    public void joinLobby(Lobby lobby) {
+        if (isAuthenticated()) {
+            Worker.execute(() -> {
+                var response = restClient
+                        .post()
+                        .uri("lobby/join/{lobbyId}", lobby.id())
+                        .header(csrfToken.headerName(), csrfToken.token())
+                        .retrieve()
+                        .toEntity(ConnectionInfo.class);
+
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    Platform.runLater(() -> gameController.joinMultiplayerGame(lobby, response.getBody()));
+                }
+            });
+        }
+    }
+
+    public void leaveLobby() {
+        var lobbyId = GameState.INSTANCE.getLobby().id();
+        var gameResult = GameState.INSTANCE.getGameStats();
+        if (isAuthenticated()) {
+            Worker.execute(() -> restClient
+                    .post()
+                    .uri("lobby/leave/{lobbyId}", lobbyId)
+                    .header(csrfToken.headerName(), csrfToken.token())
+                    .body(objectMapper.writeValueAsString(gameResult))
+                    .retrieve()
+                    .toBodilessEntity());
+        }
     }
 
     public void fetchLobbies() {
@@ -108,6 +145,10 @@ public class LobbyController {
     }
 
     private boolean isAuthenticated() {
+        if (csrfToken == null) {
+            fetchCsrfToken().await();
+        }
+
         if (encodedCredentials == null) {
             return login() != null;
         }
@@ -140,6 +181,10 @@ public class LobbyController {
     }
 
     public void logout() {
+        if (GameState.INSTANCE.isRunning() && GameState.INSTANCE.getGameMode() == GameMode.MULTIPLAYER) {
+            ErrorMessages.showErrorMessage("Cannot logout", "You are in a multiplayer game.");
+            return;
+        }
         userInfo.set(null);
         encodedCredentials = null;
     }

@@ -1,6 +1,8 @@
 package com.example.ui.controllers;
 
 import com.example.concurrent.Worker;
+import com.example.daos.Lobby;
+import com.example.network.ConnectionInfo;
 import com.example.network.GameServerConnection;
 import com.example.network.NOOPGameServerConnection;
 import com.example.network.ServerConnection;
@@ -28,28 +30,17 @@ public class GameController {
         GameState.INSTANCE.setNumberOfPlayers(1);
         GameState.INSTANCE.setIsRunning(true);
 
-        gameScene.init();
-        simulator = new Simulator(gameScene.getTetrions());
-        Worker.execute(() -> simulator.startSimulating(getConnection()));
+        startGame();
     }
 
-    public void stopSimulating() {
-        GameState.INSTANCE.setIsRunning(false);
-        if (simulator != null) {
-            simulator.stopSimulating();
-        }
-    }
+    public void joinMultiplayerGame(Lobby lobby, ConnectionInfo connectionInfo) {
+        GameState.INSTANCE.setGameMode(GameMode.MULTIPLAYER);
+        GameState.INSTANCE.setConnection(connectionInfo);
+        GameState.INSTANCE.setLobby(lobby);
+        GameState.INSTANCE.setNumberOfPlayers(lobby.maxPlayers());
+        GameState.INSTANCE.setIsRunning(true);
 
-    private ServerConnection getConnection() {
-        var mode = GameState.INSTANCE.getGameMode();
-
-        return switch (mode) {
-            case SINGLEPLAYER -> new NOOPGameServerConnection();
-            case MULTIPLAYER -> {
-                var connection = GameState.INSTANCE.getConnection();
-                yield new GameServerConnection(connection.host(), connection.port());
-            }
-        };
+        startGame();
     }
 
     public void onKeyPressed(KeyEvent e) {
@@ -91,5 +82,33 @@ public class GameController {
     public void leaveGame() {
         sceneManager.switchAppState(AppState.MAIN_MENU);
         stopSimulating();
+    }
+
+    private void stopSimulating() {
+        GameState.INSTANCE.reset();
+        if (simulator != null) {
+            simulator.stopSimulating();
+            simulator = null;
+        }
+    }
+
+    private void startGame() {
+        gameScene.init();
+        simulator = new Simulator(gameScene.getTetrions());
+        Worker.execute(() -> simulator.startSimulating(getConnection()));
+
+        sceneManager.switchAppState(AppState.GAME);
+    }
+
+    private ServerConnection getConnection() {
+        var mode = GameState.INSTANCE.getGameMode();
+
+        return switch (mode) {
+            case SINGLEPLAYER -> new NOOPGameServerConnection();
+            case MULTIPLAYER -> {
+                var connection = GameState.INSTANCE.getConnection();
+                yield new GameServerConnection(connection.hostname(), connection.port());
+            }
+        };
     }
 }

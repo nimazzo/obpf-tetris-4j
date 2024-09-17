@@ -27,14 +27,16 @@ public class Worker<T> extends Service<T> {
         };
     }
 
-    public static void execute(Executable executable) {
-        new Worker<>(() -> {
+    public static Worker<?> execute(Executable executable) {
+        var worker = new Worker<>(() -> {
             try {
                 executable.execute();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }).start();
+        });
+        worker.start();
+        return worker;
     }
 
     @Override

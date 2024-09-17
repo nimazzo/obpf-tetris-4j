@@ -73,7 +73,6 @@ public class MainMenu extends StackPane implements AppScene {
 
     @Override
     public void onEnter() {
-        System.err.println("MainMenu.onEnter");
         singlePlayerButton.requestFocus();
     }
 }

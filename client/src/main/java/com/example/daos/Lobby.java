@@ -1,9 +1,7 @@
 package com.example.daos;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public record Lobby(
+        Long id,
         String name,
         String owner,
         int numberOfPlayers,
