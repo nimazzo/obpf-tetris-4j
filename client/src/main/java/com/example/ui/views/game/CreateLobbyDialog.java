@@ -38,6 +38,8 @@ public class CreateLobbyDialog extends Dialog<LobbyCreationRequest> {
 
         getDialogPane().setContent(grid);
 
+        lobbyNameInput.requestFocus();
+
         setResultConverter(dialogButton -> {
             if (dialogButton == createButtonType) {
                 return new LobbyCreationRequest(lobbyNameInput.getText(), Integer.parseInt(maxPlayersInput.getText()));
