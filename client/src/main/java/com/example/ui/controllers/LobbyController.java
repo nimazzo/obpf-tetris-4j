@@ -188,7 +188,7 @@ public class LobbyController {
                     .toEntity(UserInfo.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                userInfo.set(response.getBody());
+                Task.runOnFxThread(() -> userInfo.set(response.getBody()));
             }
         });
     }

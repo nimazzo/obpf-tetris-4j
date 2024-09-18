@@ -47,6 +47,9 @@ public abstract class Task<T> {
 
     public void await() {
         try {
+            if (Platform.isFxApplicationThread()) {
+                throw new IllegalStateException("WARNING! You are blocking the JavaFX thread!");
+            }
             latch.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
