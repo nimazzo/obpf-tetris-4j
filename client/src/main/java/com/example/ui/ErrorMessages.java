@@ -8,9 +8,11 @@ import javafx.scene.control.TextArea;
 public class ErrorMessages {
 
     public static void showErrorMessage(String summary, String message) {
+        var threadName = Thread.currentThread().getName();
+
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("An Error Occurred");
+            alert.setTitle("An Error Occurred on thread: " + threadName);
             alert.setResizable(true);
             alert.setHeaderText(summary.substring(0, Math.min(summary.length(), 120))
                                 + (summary.length() > 120 ? "..." : ""));

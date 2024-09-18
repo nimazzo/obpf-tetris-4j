@@ -1,6 +1,6 @@
 package com.example.ui.controllers;
 
-import com.example.concurrent.Worker;
+import com.example.concurrent.Task;
 import com.example.daos.CsrfToken;
 import com.example.daos.Lobby;
 import com.example.daos.LobbyCreationRequest;
@@ -29,6 +29,7 @@ import org.springframework.web.client.RestClient;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -65,8 +66,8 @@ public class LobbyController {
         fetchCsrfToken();
     }
 
-    private void fetchCsrfToken() {
-        Worker.execute(() -> {
+    private Task<Void> fetchCsrfToken() {
+        return Task.runOnWorkerThread(() -> {
             var response = restClient
                     .get()
                     .uri("csrf")
@@ -78,100 +79,118 @@ public class LobbyController {
     }
 
     public void joinLobby(Lobby lobby) {
-        if (isAuthenticated()) {
-            Worker.execute(() -> {
-                var response = restClient
-                        .post()
-                        .uri("lobby/join/{lobbyId}", lobby.id())
-                        .header(csrfToken.headerName(), csrfToken.token())
-                        .retrieve()
-                        .toEntity(ConnectionInfo.class);
+        Task.runOnWorkerThread(() -> {
+            if (!ensureIsAuthenticated().get()) {
+                return;
+            }
 
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    Platform.runLater(() -> gameController.joinMultiplayerGame(lobby, response.getBody()));
-                }
-            });
-        }
+            var response = restClient
+                    .post()
+                    .uri("lobby/join/{lobbyId}", lobby.id())
+                    .header(csrfToken.headerName(), csrfToken.token())
+                    .retrieve()
+                    .toEntity(ConnectionInfo.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Task.runOnFxThread(() -> gameController.joinMultiplayerGame(lobby, response.getBody()));
+            }
+        });
     }
 
     public void leaveLobby() {
-        var lobbyId = GameState.INSTANCE.getLobby().id();
-        var gameResult = GameState.INSTANCE.getGameStats();
-        if (isAuthenticated()) {
-            Worker.execute(() -> restClient
+        Task.runOnWorkerThread(() -> {
+            var lobbyId = GameState.INSTANCE.getLobby().id();
+            var gameResult = GameState.INSTANCE.getGameStats();
+
+            if (!ensureIsAuthenticated().get()) {
+                return;
+            }
+
+            restClient
                     .post()
                     .uri("lobby/leave/{lobbyId}", lobbyId)
                     .header(csrfToken.headerName(), csrfToken.token())
                     .body(objectMapper.writeValueAsString(gameResult))
                     .retrieve()
-                    .toBodilessEntity());
-        }
+                    .toBodilessEntity();
+        });
     }
 
-    public void fetchLobbies() {
-        if (isAuthenticated()) {
-            Worker.execute(() -> {
-                var response = restClient
-                        .get()
-                        .uri("lobby")
-                        .retrieve()
-                        .toEntity(String.class);
+    public Task<Void> fetchLobbies() {
+        return Task.runOnWorkerThread(() -> {
+            if (!ensureIsAuthenticated().get()) {
+                return;
+            }
 
-                var jsonTree = objectMapper.readTree(response.getBody());
-                var contentNode = jsonTree.get("content");
+            var response = restClient
+                    .get()
+                    .uri("lobby")
+                    .retrieve()
+                    .toEntity(String.class);
 
-                lobbyMenu.setLobbies(objectMapper.readValue(contentNode.toString(), new TypeReference<>() {
-                }));
-            });
-        }
+            var jsonTree = objectMapper.readTree(response.getBody());
+            var contentNode = jsonTree.get("content");
+
+            List<Lobby> lobbies = (objectMapper.readValue(contentNode.toString(), new TypeReference<>() {
+            }));
+            Task.runOnFxThread(() -> lobbyMenu.setLobbies(lobbies));
+        });
     }
 
     public void createNewLobby(LobbyCreationRequest request) {
-        if (isAuthenticated()) {
-            Worker.execute(() -> {
-                restClient
-                        .post()
-                        .uri("lobby/create")
-                        .header(csrfToken.headerName(), csrfToken.token())
-                        .body(objectMapper.writeValueAsString(request))
-                        .retrieve()
-                        .toEntity(String.class);
+        Task.runOnWorkerThread(() -> {
+            if (!ensureIsAuthenticated().get()) {
+                return;
+            }
 
-                fetchLobbies();
-            });
-        }
+            restClient
+                    .post()
+                    .uri("lobby/create")
+                    .header(csrfToken.headerName(), csrfToken.token())
+                    .body(objectMapper.writeValueAsString(request))
+                    .retrieve()
+                    .toEntity(String.class);
+
+            fetchLobbies();
+        });
     }
 
-    private boolean isAuthenticated() {
-        if (csrfToken == null) {
-            fetchCsrfToken();
-        }
+    private Task<Boolean> ensureIsAuthenticated() {
+        return Task.callOnWorkerThread(() -> {
+            if (csrfToken == null) {
+                fetchCsrfToken().await();
+                if (csrfToken == null) return false;
+            }
 
-        if (encodedCredentials == null) {
-            return login() != null;
-        }
-        return true;
+            if (encodedCredentials == null) {
+                Task.runOnFxThread(this::login).await();
+                if (encodedCredentials == null) return false;
+            }
+
+            tryFetchUserInfo().await();
+
+            return userInfo.get() != null;
+        });
     }
 
-    public UserInfo login() {
+    public void login() {
         encodedCredentials = lobbyMenu.askForCredentials();
-
         if (encodedCredentials != null) {
-            userInfo.set(tryFetchUserInfo());
+            ensureIsAuthenticated();
         }
-        return userInfo.get();
     }
 
-    private UserInfo tryFetchUserInfo() {
-        var response = restClient.get()
-                .uri("/user")
-                .retrieve()
-                .toEntity(UserInfo.class);
+    private Task<Void> tryFetchUserInfo() {
+        return Task.runOnWorkerThread(() -> {
+            var response = restClient.get()
+                    .uri("/user")
+                    .retrieve()
+                    .toEntity(UserInfo.class);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
-        }
-        return null;
+            if (response.getStatusCode() == HttpStatus.OK) {
+                userInfo.set(response.getBody());
+            }
+        });
     }
 
     public void returnToMainMenu() {
@@ -192,8 +211,13 @@ public class LobbyController {
     }
 
     public void goToLobbyMenu() {
-        sceneManager.switchAppState(AppState.LOBBIES);
-        fetchLobbies();
+        Task.runOnWorkerThread(() -> {
+            fetchLobbies().await();
+            if (userInfo.get() == null) {
+                return;
+            }
+            Task.runOnFxThread(() -> sceneManager.switchAppState(AppState.LOBBIES));
+        });
     }
 
     static class CookieInterceptor implements ClientHttpRequestInterceptor {

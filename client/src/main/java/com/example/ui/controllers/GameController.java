@@ -1,6 +1,6 @@
 package com.example.ui.controllers;
 
-import com.example.concurrent.Worker;
+import com.example.concurrent.Task;
 import com.example.daos.Lobby;
 import com.example.network.ConnectionInfo;
 import com.example.network.GameServerConnection;
@@ -95,7 +95,7 @@ public class GameController {
     private void startGame() {
         gameScene.init();
         simulator = new Simulator(gameScene.getTetrions());
-        Worker.execute(() -> simulator.startSimulating(getConnection()));
+        Task.runOnWorkerThread(() -> simulator.startSimulating(getConnection()));
 
         sceneManager.switchAppState(AppState.GAME);
     }

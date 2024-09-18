@@ -8,7 +8,6 @@ import com.example.ui.TextFactory;
 import com.example.ui.views.game.Colors;
 import com.example.ui.views.game.CreateLobbyDialog;
 import com.example.ui.views.game.LoginDialog;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -124,7 +123,7 @@ public class LobbyMenu extends StackPane implements AppScene {
     }
 
     public void setLobbies(List<Lobby> lobbies) {
-        Platform.runLater(() -> this.lobbies.setAll(lobbies));
+        this.lobbies.setAll(lobbies);
     }
 
     @Override
