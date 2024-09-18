@@ -80,12 +80,10 @@ public class GameController {
     }
 
     public void leaveGame() {
-        sceneManager.switchAppState(AppState.MAIN_MENU);
         stopSimulating();
     }
 
     private void stopSimulating() {
-        GameState.INSTANCE.reset();
         if (simulator != null) {
             simulator.stopSimulating();
             simulator = null;

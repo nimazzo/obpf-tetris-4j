@@ -97,8 +97,8 @@ public class LobbyController {
         });
     }
 
-    public void leaveLobby() {
-        Task.runOnWorkerThread(() -> {
+    public Task<Void> leaveLobby() {
+        return Task.runOnWorkerThread(() -> {
             var lobbyId = GameState.INSTANCE.getLobby().id();
             var gameResult = GameState.INSTANCE.getGameStats();
 

@@ -1,5 +1,6 @@
 package com.example.ui.controllers;
 
+import com.example.concurrent.Task;
 import com.example.simulation.GameMode;
 import com.example.state.AppState;
 import com.example.state.GameState;
@@ -20,7 +21,12 @@ public class RootController {
     }
 
     public void onApplicationClose() {
-        leaveGame();
+        leaveLobbyAndStopSimulating().await();
+    }
+
+    public void leaveGame() {
+        leaveLobbyAndStopSimulating();
+        sceneManager.switchAppState(AppState.MAIN_MENU);
     }
 
     public void onKeyPressed(KeyEvent e) {
@@ -46,10 +52,13 @@ public class RootController {
         }
     }
 
-    public void leaveGame() {
-        if (GameState.INSTANCE.getGameMode() == GameMode.MULTIPLAYER) {
-            lobbyController.leaveLobby();
-        }
-        gameController.leaveGame();
+    private Task<Void> leaveLobbyAndStopSimulating() {
+        return Task.runOnWorkerThread(() -> {
+            gameController.leaveGame();
+            if (GameState.INSTANCE.getGameMode() == GameMode.MULTIPLAYER) {
+                lobbyController.leaveLobby().await();
+            }
+            GameState.INSTANCE.reset();
+        });
     }
 }
