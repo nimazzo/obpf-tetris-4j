@@ -44,7 +44,7 @@ public class RootController {
     }
 
     private void handleEscapePressed() {
-        if (GameState.INSTANCE.isRunning()) {
+        if (GameState.INSTANCE.getGameMode() != null) {
             gameController.togglePause();
             sceneManager.toggleGameMenu();
         } else {

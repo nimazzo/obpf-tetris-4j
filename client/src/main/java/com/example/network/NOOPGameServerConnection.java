@@ -1,5 +1,7 @@
 package com.example.network;
 
+import com.example.simulation.Simulator;
+
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -35,5 +37,9 @@ public class NOOPGameServerConnection implements ServerConnection {
     @Override
     public Optional<ServerMessage> pollMessage() {
         return Optional.empty();
+    }
+
+    @Override
+    public void setSimulator(Simulator simulator) {
     }
 }

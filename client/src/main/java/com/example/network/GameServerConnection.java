@@ -1,5 +1,8 @@
 package com.example.network;
 
+import com.example.simulation.Simulator;
+import com.example.state.GameState;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,9 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.*;
 
 public class GameServerConnection implements ServerConnection {
     private Socket socket;
@@ -20,10 +21,9 @@ public class GameServerConnection implements ServerConnection {
     private final LinkedBlockingQueue<ServerMessage.HeartbeatMessage> heartbeatQueue = new LinkedBlockingQueue<>();
     private long playerID;
 
-    private final AtomicBoolean running = new AtomicBoolean(true);
-
     private final String host;
     private final int gamePort;
+    private Simulator simulator;
 
     public GameServerConnection(String host, int gamePort) {
         this.host = host;
@@ -35,17 +35,21 @@ public class GameServerConnection implements ServerConnection {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             socket = new Socket(host, gamePort);
             System.out.println("Connected to server");
-            executor.execute(this::readServerMessages);
-            executor.execute(this::sendHeartbeats);
+            var f1 = executor.submit(this::readServerMessages);
+            var f2 = executor.submit(this::sendHeartbeats);
+            propagateExceptions(f1, f2);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            GameState.INSTANCE.reset();
+            simulator.stopSimulating();
         }
     }
 
     @Override
     public void stop() {
         try {
-            running.set(false);
+            GameState.INSTANCE.setIsRunning(false);
             socket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -71,12 +75,17 @@ public class GameServerConnection implements ServerConnection {
         return Optional.ofNullable(messageQueue.poll());
     }
 
+    @Override
+    public void setSimulator(Simulator simulator) {
+        this.simulator = simulator;
+    }
+
     private void readServerMessages() {
         try {
             var in = socket.getInputStream();
 
             int messageType;
-            while (running.get() && (messageType = in.read()) != -1) {
+            while (GameState.INSTANCE.isRunning() && (messageType = in.read()) != -1) {
                 switch (MessageType.fromValue(messageType)) {
                     case GameStart -> readGameStartMessage(in);
                     case StateBroadcast -> readStateBroadcast(in);
@@ -86,7 +95,7 @@ public class GameServerConnection implements ServerConnection {
                 }
             }
         } catch (IOException e) {
-            if (running.get()) {
+            if (GameState.INSTANCE.isRunning()) {
                 throw new RuntimeException(e);
             }
         }
@@ -149,7 +158,7 @@ public class GameServerConnection implements ServerConnection {
         var messageBuffer = new ByteArrayOutputStream();
         var serializer = new TypeSerializer();
 
-        while (running.get()) {
+        while (GameState.INSTANCE.isRunning()) {
             try {
                 var heartbeatMessage = heartbeatQueue.take();
                 var keyStatesBuffer = heartbeatMessage.keyStatesBuffer();
@@ -175,11 +184,24 @@ public class GameServerConnection implements ServerConnection {
                 var out = socket.getOutputStream();
                 out.write(messageBuffer.toByteArray());
             } catch (IOException e) {
-                System.out.println("Server has closed the connection");
+                throw new RuntimeException("Server has closed the connection", e);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             messageBuffer.reset();
+        }
+    }
+
+    private void propagateExceptions(Future<?>... futures) {
+        while (GameState.INSTANCE.isRunning()) {
+            for (var future : futures) {
+                try {
+                    future.get(1, TimeUnit.SECONDS);
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                } catch (TimeoutException _) {
+                }
+            }
         }
     }
 }

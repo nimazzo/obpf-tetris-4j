@@ -34,7 +34,6 @@ public class Simulator {
     // Multiplayer Network
     private ServerConnection conn;
     private final List<int[]> keyStatesBuffer = new ArrayList<>(16);
-    private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean[] keysPressed = Stream.generate(AtomicBoolean::new).limit(7).toArray(AtomicBoolean[]::new);
 
     private long seed;
@@ -50,6 +49,8 @@ public class Simulator {
         resetState();
 
         this.conn = conn;
+        conn.setSimulator(this);
+
 
         Task.runOnWorkerThread(conn::connect);
 
@@ -66,7 +67,7 @@ public class Simulator {
             ObpfNativeInterface.obpf_tetrion_set_action_handler(obpfTetrion, handler, MemorySegment.NULL);
 
             players.put(clientId, new PlayerInfo(clientId, tetrions.getFirst(), obpfTetrion));
-            running.set(true);
+            GameState.INSTANCE.setIsRunning(true);
         }
         try (var executor = Executors.newScheduledThreadPool(2)) {
             startTime = System.currentTimeMillis();
@@ -79,15 +80,16 @@ public class Simulator {
     }
 
     public void stopSimulating() {
-        running.set(false);
+        GameState.INSTANCE.setIsRunning(false);
         gameFinished.countDown();
         if (conn != null) {
             conn.stop();
+            conn = null;
         }
     }
 
     public void setKeyState(int key, boolean isPressed) {
-        if (!running.get()) return;
+        if (!GameState.INSTANCE.isRunning()) return;
         keysPressed[key].set(isPressed);
     }
 
@@ -115,7 +117,7 @@ public class Simulator {
     }
 
     private void simulate() {
-        if (running.get()) {
+        if (GameState.INSTANCE.isRunning()) {
             var frameToSimulate = (int) ((System.currentTimeMillis() - startTime - pauseTime) / (1000.0 / 60.0));
             while (frameToSimulate > frame) {
                 var client = players.get(clientId);
@@ -324,14 +326,14 @@ public class Simulator {
     private long lastPause;
 
     public void togglePause() {
-        if (running.get()) {
+        if (GameState.INSTANCE.isRunning()) {
             log.info("Pausing simulation");
             lastPause = System.currentTimeMillis();
-            running.set(false);
+            GameState.INSTANCE.setIsRunning(false);
         } else {
             log.info("Resuming simulation");
             pauseTime += System.currentTimeMillis() - lastPause;
-            running.set(true);
+            GameState.INSTANCE.setIsRunning(true);
         }
     }
 }

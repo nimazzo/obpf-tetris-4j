@@ -1,5 +1,7 @@
 package com.example.network;
 
+import com.example.simulation.Simulator;
+
 import java.util.Optional;
 
 public interface ServerConnection {
@@ -12,4 +14,6 @@ public interface ServerConnection {
     ServerMessage waitForMessage();
 
     Optional<ServerMessage> pollMessage();
+
+    void setSimulator(Simulator simulator);
 }
