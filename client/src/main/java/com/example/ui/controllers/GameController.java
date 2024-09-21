@@ -51,7 +51,7 @@ public class GameController {
             case SPACE -> simulator.setKeyState(3, true);
             case UP -> simulator.setKeyState(4, true);
             case CONTROL -> simulator.setKeyState(5, true);
-            case ENTER -> simulator.setKeyState(6, true);
+            case ENTER, SHIFT -> simulator.setKeyState(6, true);
         }
     }
 
