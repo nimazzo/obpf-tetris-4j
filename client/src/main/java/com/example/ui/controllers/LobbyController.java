@@ -25,6 +25,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.io.IOException;
 import java.net.HttpCookie;
@@ -52,12 +53,16 @@ public class LobbyController {
         this.sceneManager = sceneManager;
         this.gameController = gameController;
 
+        var env = System.getenv();
+        var lobbyHost = env.getOrDefault("LOBBY_HOST", "localhost");
+        var lobbyPort = env.getOrDefault("LOBBY_PORT", "8080");
+
         this.restClient = RestClient.builder()
                 .requestInterceptors(interceptors -> {
                     interceptors.add(new CookieInterceptor());
                     interceptors.add(new AuthInterceptor());
                 })
-                .baseUrl("http://localhost:8080/")
+                .baseUrl(new DefaultUriBuilderFactory().builder().scheme("http").host(lobbyHost).port(lobbyPort).toUriString())
                 .defaultHeader("Content-Type", "application/json")
                 .defaultStatusHandler(new ErrorResponseHandler())
                 .messageConverters(converters -> converters.add(new MappingJackson2HttpMessageConverter()))
