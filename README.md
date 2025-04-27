@@ -29,7 +29,7 @@ played in singleplayer mode.
 
 ## Requirements
 
-- Java JDK 22 or higher
+- JDK 22
 - Jextract (tested with version 22)
 - CMake (only for building the game server executable)
 - C++ compiler (only for building the game server executable)
