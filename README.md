@@ -11,6 +11,16 @@ multiplayer modes, including user login, lobby creation, and joining existing lo
 Running the client without a running Lobby Server will show an error message upon startup, but the game can still be
 played in singleplayer mode.
 
+## Table of Contents
+
+- [Project Structure](#Project-Structure)
+- [Requirements](#Requirements)
+- [Generating Java Bindings for the DLL](#Generating-Java-Bindings-for-the-DLL)
+- [Building the Project](#Building-the-Project)
+- [Running the Game](#Running-the-Game)
+- [Configuring the Lobby Server Adress](#Configuring-the-Lobby-Server-Adress)
+- [Screenshots](#Screenshots)
+
 ## Project Structure
 
 - `client/` - Contains the main game client implementation
@@ -45,7 +55,7 @@ $ cmake --build . --target obpf
 After compiling, the created dll can be found at `simulator/build/bin/obpf/obpf_d` (or
 `simulator/build/bin/obpf/Debug/obpf_d.dll` on Windows using MSVC)
 
-#### Tested with
+### Tested with
 
 | OS           | CMake Version | Compiler                                  |
 |--------------|---------------|-------------------------------------------|
@@ -110,3 +120,25 @@ You can also pass the `-Djavafx.animation.fullspeed=true` option to enable uncap
 
 By default, the client will try to connect to the lobby server at `localhost:8080`. You can change this by setting the
 `LOBBY_HOST` and `LOBBY_PORT` environment variables to the desired address.
+
+## Screenshots
+
+### Main Menu
+
+![Screenshot 1](docs/main.png)
+
+### Pause Menu
+
+![Screenshot 2](docs/pause.png)
+
+### Single Player Mode
+
+![Screenshot 3](docs/sp.png)
+
+### Multiplayer Mode
+
+![Screenshot 4](docs/mp.png)
+
+### Lobby Creation
+
+![Screenshot 5](docs/lobby.png)
