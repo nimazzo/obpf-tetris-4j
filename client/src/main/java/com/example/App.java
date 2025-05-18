@@ -15,6 +15,7 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -89,7 +90,7 @@ public class App extends Application {
 
     private Node createBackground() {
         var background = new Pane();
-        background.setEffect(new javafx.scene.effect.GaussianBlur(2));
+        background.setEffect(new GaussianBlur(2));
         var img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("background.jpeg")));
         var backgroundImg = new BackgroundImage(img, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
                 new BackgroundSize(500, 500, false, false, false, false));
